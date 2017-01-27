@@ -1,0 +1,39 @@
+<div id="LoginOverlay"></div>
+<div id="Login">
+
+  <div id="log"></div>
+  <div id="LoginContent" ng-show="LoginContainer">
+    <div class="welcomeConetnt">
+     <div >Hello, welcome to Corvix, a digital app developed by GE Healthcare to visualize and interact with population demographics, health data and hospital characteristics across the U.S.</div>
+  
+  <div style="margin-top:10px">Join us in a brief tour, then get started! When you’re finished with your session,&nbsp;please share your feedback on the provided form.</div>
+
+   </div>
+  
+  <div id="LoginContainer">
+
+     <div id="LoginError" ng-show="loginError">{{errorMessage}}</div>
+     <div class="loginText">Login</div>
+    <div>
+      <input type="text" placeholder="Username" value="user1" class="userinput" ng-model="Username" 
+      data-ng-change="checkUser()" id="numPeople")>
+    </div>
+    <div>
+      <input type="password" placeholder="Password" value="pwd1" class="userpassword" ng-model="UserPass">
+    </div>
+    <div class="agreeforfeed" ng-show="showFeedDiv">
+       <input type="checkbox" ng-model="checked" ><span style="color: #928989;">Yes, I agree to give feedback</span>
+    </div>
+    <button id="loginsubmit" type="submit" ng-click="gotoMapView()" ng-disabled="!checked"  ng-class="{'disable' : !checked}">Login</button>
+  </div>
+</div>
+</div>
+ <!-- ************************ feebackWindow POPUP STARTS******************** -->
+          <div id="feedwindow" ng-show="feedwindow">
+            <div id="feedwindowcontainer">
+               <div class="feedwindowContent">Please give feedback for our improvement...</div>
+                <button type="button" class="feedwindowok" ng-click="showFeedbackFromLogin()">ok</button>
+            </div>
+         </div>
+
+

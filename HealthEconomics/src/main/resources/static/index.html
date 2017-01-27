@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html ng-app="HealthEconomicsApp">
+
+  <head>
+
+
+
+   <script type="text/javascript" src="js/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="js/angular/angular.js"></script>
+
+     <script src="js/lib/ui-bootstrap-tpls.js"></script>
+  
+ 
+
+     <script type="text/javascript" src="js/angular/angular-route.js"></script>
+     <script type="text/javascript" src="js/angular/router.js"></script>
+     <script type="text/javascript" src="js/lib/highcharts.js"></script>
+     <script type="text/javascript" src="js/controller/MainController.js"></script>
+    <script type="text/javascript" src="js/controller/MapViewController.js"></script>
+    <script type="text/javascript" src="js/controller/LoginController.js"></script>
+    <script type="text/javascript" src="js/controller/InsightsViewController.js"></script>
+
+    <script type="text/javascript" src="js/controller/State.js"></script>
+    <script type="text/javascript" src="js/common/common.js"></script>
+    <script type="text/javascript" src="js/queue.v1.min.js"></script>
+    <script src="js/lib/d3.v3.min.js"></script>
+    <script src="js/lib/topojson.v0.min.js"></script>   
+    <script type="text/javascript" src="js/lib/lodash.min.js"></script> 
+    
+    <script type="text/javascript" src="js/lib/angular-dropdown-multiselect.js"></script> 
+    <link rel="stylesheet" href="css/bootstrap-select.min.css" />   
+
+
+   <script type="text/javascript" src="js/factory/web-Service-Call.js"></script> 
+   <script type="text/javascript" src="js/lib/toaster.js"></script>
+   <script type="text/javascript" src="js/lib/angular-messages.js"></script>
+
+   <link rel="stylesheet" href="css/toaster.css" />
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>  
+   <link rel="stylesheet" href="css/rzslider.css"/>
+   <script type="text/javascript" src="js/lib/rzslider.js"></script>
+   <link rel="stylesheet" href="css/common.css" /> 
+   <style>
+
+   </style>
+
+  </head>
+
+  <body ng-controller="MainController">
+    <div id="HealthEco-header">
+	    <div id="HealthEco-header-leftcontainer">
+		    <div id="HealthEco-logo" ng-click="showError()">
+		    	<img src="images/Logo.png"></img>
+		   </div>
+		    <div class="appname">
+		    	<span class="app-name">Corvix<sup><span class="supScript">TM</span></sup></span>
+		    	<span class="app-poweredby"><i>powered by GE Healthcare</i></span>
+		    </div>
+	    	
+	    </div>
+	    <div id="HealthEco-header-rightcontainer">
+	    	<span ng-click="showTakeTour1()"> Take a tour</span>
+	    	<span class="HealthEco-header-feedback" id="Feedback" ng-click="showFeedback1()">Feedback</span>  	
+		    <div class="HealthEco-header-button HealthEco-header-button-selected borderleftradius" id="mapviewbutton" ng-click="showMapView()">Map</div><div id="insightsviewbutton" class="HealthEco-header-button HealthEco-header-button-unselected borderrightradius" ng-click="showInsightsView()">Insights</div>
+        <div class="" style="margin-left: 10px; display: inline-block;">
+            <span   style="margin-right: 4px; font-size:15px;cursor:auto;">{{User}}</span><img src="images/logout.png" style="width: 25px;margin-top: 7px; cursor:pointer;" ng-click="logout()"/>
+
+        </div>
+      
+	    </div>
+    </div>
+    <!-- *************** Help Popup Starts************* -->
+
+    <div id="helpPopup" ng-show="helpPopup">
+      <div id="mapview-container">
+        <div class="mapview-popup-cross" ng-click="helpPopup=!helpPopup" style="visibility: hidden;">x</div>
+        <div class="mapview-popup-header" style="display:none"></div>
+        <div class="mapview-popup-content">
+           <span class="mapbuttonspan" id="mapButtonIpad" ng-show="mapbuttonspan"><img src="images/mapBtn.png"></img></span>
+           <div class="tourmain" ng-show="FirstHelp">
+             <span class="upDirectedArrow"><img src="images/arrow_001.png"></img></span>
+             <div class="pageNavigate" >Tip: 1) Use the primary navigation to toggle between Map and Insights View Page.</div>
+            <div class="nextButton" ng-click="firsthelp()">Next</div>
+          </div>
+          <div class="tourmain" ng-hide="secondtHelp">
+            <div class="pageNavigate" style="margin-left: 100px;">Tip: 2) Use the filter option to change the map.</div>
+            <div class="nextButton nextbtn11"  ng-click="gotIt()">Got It !</div>
+            <span class="rightArrowImg rightArrowImg1"><img src="images/arrow_002.png"></img></span>
+            <span class="filetrImgspan"><img src="images/filterPanel.png"></img></span>
+          </div>
+          <div ng-hide="thirdHelp">
+            <div class="tourmain" >
+              <div class="pageNavigate zoomoutIn">Tip: 3) Zoom IN/OUT to drill down into specific region.</div>
+              <div class="nextButton"  ng-click="zoomInOut()">Got It!</div>
+              <span class="rightArrowImg" style="margin-top: 55px;"><img src="images/arrow_003.png"></img></span>
+              <span class="footerSpan"><img src="images/tip3.png" class="sitemapIMg"></img></span>
+             </div>
+           
+          </div>
+          <div  ng-hide="Insight_help">
+              <span class="mapbuttonspan" id="mapButtonIpad" ng-show="insightbutton"><img src="images/insightbtn.JPG"></img></span>
+            <div class="tourmain Insight_help">
+               <span class="upDirectedArrow"><img src="images/arrow_001.png" style="margin-top:0px;"></img></span>
+                <div class="pageNavigate zoomoutIn">Tip: 4) Use the Insight button to get disease projection via Chart and State Map.</div>
+                <div class="nextButton"  ng-click="InsightHelp()">Got It!</div>
+             </div> 
+             <span class="rightArrowzoom" style=""><img src="images/arrow_003.png"></img></span>
+             <div class="ChartImghelp">
+               <img src="images/chart.png" style="margin-left:221px;" class="img1"></img>
+               <img src="images/statemap.png" style="margin-left:30px;"></img>
+            </div>
+          </div>
+
+          <div class="ChnageState" ng-hide="ChnageState">
+                 <div class="Select-Img"><img src="images/statesel.png"></img></div>
+                  <div class="selectArrow">
+                       <img src="images/arrow_003.png"></img>
+                  </div>
+                 <div class="ChnageState-Text Selectstate">Tip: 5) Select the state you want from dropdown  and according to selection map and graph will be changed.</div>
+                  <div class="nextButton"  ng-click="Changestate()">Got It!</div>
+                  <span class="arrrowselectstate" style=""><img src="images/arrow_003.png"></img></span>
+                   <div class="ChartImghelp">
+                   <img src="images/chart.png" style="margin-left:221px;" class="img1"></img>
+                   <img src="images/statemap.png" style="margin-left:30px;"></img>
+                </div>
+          </div>
+          <div class="ChnageState" ng-hide="footerhelp" style="max-width:90%;margin:0 auto;">
+               <div class="ChnageState-Text">Tip: 6) Does the map seem complicated? No problem. No matter what filters you select, the "This Map Shows section will interpret the map."</div>
+               <div class="nextButton"  ng-click="closehelp()">Done!</div>
+            <span class="rightArrowImg" style="margin-top: 55px;"><img src="images/arrow_003.png"></img></span>
+               <div class="">
+                   <img src="images/footer.png" style="width: 100%;"></img>
+               </div>
+          </div>
+
+      </div>
+    </div>
+   </div>
+<!-- *************** FeedBack Popup Starts ************* -->
+    <div id="thankspopup" ng-show="thankspopup">
+       <div class="thanksContent">
+          <div class="thanks_text">Thanks for your feedback!!!</div>
+          <div class="okdiv"><button type="submit" class="thanks_ok" ng-click="feedbackOK()">Continue</button></div>
+       </div>
+
+    </div> 
+    <div id="thankspopup" ng-show="contactSaved">
+       <div class="thanksContent">
+          <div class="thanks_text">Thank you for contacting us. We will get back to you shortly.</div>
+          <div class="okdiv"><button type="submit" class="thanks_ok" ng-click="contactOk()">Continue</button></div>
+       </div>
+
+    </div>
+
+    <!-- *************** Terms and condition Popup Starts ************* -->
+    <div id="termspopup" ng-show="termsPopup">
+      <div class="termcross" ng-click="closeTerms()" ng-show="crossTerms">x</div>
+       <div class="termsandconditionheader">Terms and Conditions as of &nbsp;March 18, 2016 </div>
+      <div id="termspopup-container">
+          <div class="termsPopup">
+           <div class="termsPopup-content">
+          This Mobile App Terms of Use (the "Terms of Use") is a binding legal agreement between you, as an individual or entity, and GE Healthcare. By downloading, installing, or using the GEHC app (the "App"), you agree to be bound by the terms of these Terms of Use. If you do not agree to the EULA, do not use the App. 
+        By accessing or using this App, you represent and warrant that you are of legal age and mind to form a binding contract with the General Electric Company, a corporation organized under the laws of the State of New York, acting through and on behalf of its GE Healthcare business, including its corporate affiliates worldwide (collectively, &ldquo;GEHC&rdquo;).
+
+         </div>
+       <div class="termsPopup-main">
+         <div class="termsPopup-header">Changes to the Terms of Use</div>
+        <div class="termsPopup-content">GEHC may revise and update the Terms of Use from time to time in our sole discretion. All changes are effective immediately when we post them and apply to all access to and use of the App thereafter. Your continued use of the App following the posting of revised Terms of Use means that you accept and agree to the changes. 
+        GEHC reserves the right to withdraw or amend the App in our sole discretion without notice. We will not be liable if for any reason all or any part of the App is unavailable at any time or for any period. From time to time, we may restrict access to some parts of the App to users for maintenance or any other reason.
+        </div>
+        <br/>
+        <div class="termsPopup-header">Accessing and Using the App</div>
+         <div class="termsPopup-content">
+        To access and use the App, you will be required to register and establish your user account.  You will be asked to provide certain registration details or other information. It is a condition of your access and use of the App that all the information you provide for user registration and account set-up is correct, current and complete. You agree that all information you provide to register with the App is governed by the <a herf="#" ng-click="showtermsFromPrivacy()">GEHC Corvix&trade; Privacy Policy</a>, and you consent to all actions we take with respect to your information consistent with the GEHC Corvix&trade; Privacy Policy. You and other authorized end-users who have registered and established user accounts for the App and have accepted the Terms of Use are collectively referred to as &ldquo;Users&rdquo;.
+        If you have obtained a user name, password or any other piece of information as part of our security procedures, you must treat such information as confidential, and you must not disclose it to any other person or entity. You also acknowledge that your account is personal to you and agree not to provide any other person with access to this App or portions of it using your user name, password or other security information. You agree to notify us immediately of any unauthorized access to or use of your user name or password or any other breach of security. You also agree to ensure that you exit from your account at the end of each session. You should use particular caution when accessing your account from a public or shared computer so that others are not able to view or record your password or other personal information.
+        GEHC has the right to disable any user name, password or other identifier, whether chosen by you or provided by us, at any time in our sole discretion if, in our opinion, you have violated any provision of the Terms of Use. GEHC may also deny account sign-up based on your location or other reasons.  You must not attempt to work around any such limitations in the App.
+</div>
+</div>
+ <div class="termsPopup-main">
+<div class="termsPopup-header">Content Rights</div>
+<div class="termsPopup-content">The App and its tools, design, features and functionality (including but not limited to all information, software, text, displays, images, video and audio, and the design, selection and arrangement thereof), are owned by GEHC, its licensors or other providers of such material and are protected by United States and international copyright, trademark, patent, trade secret and other intellectual property or proprietary rights laws (&ldquo;Intellectual Property&rdquo;). The Terms of Use grant you limited personal rights to use the App, and you are prohibited from reselling, sublicensing or otherwise commercializing the App for monetary gains.
+In the event that you acquire any right in the foregoing Intellectual Property, you hereby assign to GE Healthcare all rights in and to the Intellectual Property, as well as any suggestions or feedback you provide in connection with the Intellectual Property; you agree to provide reasonable assistance to GEHC in enforcing its rights to the Intellectual property. 
+GEHC does not claim ownership of the content you provide and upload on the App. Your content remains your content. GEHC also does not control, verify, or endorse the content that you and others make available on the App. You control who may access your content, along with any invited Users. If you share content in your records, then you agree that anyone you have shared content with may use or access that content and are otherwise authorized by applicable law to do so. You also understand and acknowledge that you are responsible for any content that you transmit or upload, including its legality, reliability, accuracy and appropriateness.  When you give others access to your content on the App, they may use, reproduce, distribute, display, transmit, and communicate to the public the content. If you do not want others to have that ability, do not use the App to share your content.
+If you share content on the App in a way that infringes others' rights, including intellectual property rights or privacy rights, you are breaching the Terms of Use. You represent and warrant that you have all the rights necessary for you to grant the rights in this section and the use of the content does not violate any law. GEHC may remove your content from the App at any time if you breach the Terms of Use. 
+GEHC does not warrant the accuracy, completeness or usefulness of the information uploaded on the App by the Users. Any reliance you place on such information is strictly at your own risk. We disclaim all liability and responsibility arising from any reliance placed on such materials by you or any User of the App, or by anyone who may be informed of any of its contents.  Furthermore, the App contains decision support or other tools that may be used by qualified healthcare providers only.  These tools do not make clinical decisions or replace the medical judgment of properly trained healthcare providers.  It remains the healthcare provider&rsquo;s responsibility to exercise its independent medical judgment in providing care based on all relevant information and factors.
+The App is not intended to function as a primary document retention or storage tool.  Data that you upload or create in the App are stored only for a limited period of time and that such data will be automatically deleted from the App without notice to Users.  You are responsible for backing up the data that you store on the App. In the absence of other contractual obligations, if your App is canceled, we may permanently delete your data from our servers, and we have no obligation to return data to you after the App is canceled. If data is stored with an expiration date, we may also delete the data as of that date. Deleted data may be irretrievable.
+Certain data provided in this App was supplied by Truven Health Analytics Inc. (&ldquo;Truven&rdquo;).   Specifically, Truven data includes data used to provide information on rates of hospitalization diagnoses for heart disease and stroke and year-based projections, as well as data applied in the visualization through the functionality of selecting the disease of interest and/or selecting the year of interest.  Any analysis, interpretation or conclusion based on such data is solely that of the authors and not Truven.
+</div>
+<div class="termsPopup-header">Trademarks</div>
+<div class="termsPopup-content">Trademarks, logos and service marks displayed on the App are registered and unregistered trademarks of General Electric Company, its licensors or content providers, or other third parties. All of these trademarks, logos and service marks are the property of their respective owners. Nothing on the App shall be construed as granting, by implication, estoppel, or otherwise, any license or right to use any trademark, logo or service mark displayed on the App without the owner's prior written permission, except as otherwise described herein. We reserve all rights not expressly granted in and to the App and its content.  The App and all of its content, including but not limited to text, design, graphics, interfaces and code, and the selection and arrangement thereof, is protected as a compilation under the copyright laws of the United States and other countries.  All other third-party names, logos, product and service names, designs and slogans on the App are the trademarks of their respective owners.
+</div>
+<div class="termsPopup-header">Prohibited Uses</div>
+<div class="termsPopup-content">You may use the App only for lawful purposes and in accordance with the Terms of Use. The App also may contain features where you may transmit direct messages or post and share comments with other Users in the App. You agree not to use the App:
+In any way that violates any applicable federal, state, local or international law or regulation (including, without limitation, any laws regarding personal data privacy and security). 
+Infringe any patent, trademark, trade secret, copyright or other intellectual property or other rights of any other person.
+To impersonate or attempt to impersonate GEHC, a GEHC employee, another User or any other person or entity (including, without limitation, by using e-mail addresses or registration names associated with any of the foregoing).
+To engage in any other conduct that restricts or inhibits anyone's use or access of the App, or which, as determined by GEHC, may harm GEHC or Users of the App or expose them to liability.
+Promote any illegal activity, or advocate, promote or assist any unlawful act.
+Additionally, you agree not to:
+Use the App in any manner that could disable, overburden, damage, or impair the App or interfere with any other party's use of the App, including their ability to engage in real time activities through the App.
+Use any robot, spider or other automatic device, process or means to access the App for any purpose, including monitoring or copying any of the material on the App.
+Use any manual process to monitor or copy any of the material on the App or for any other unauthorized purpose without our prior written consent.
+Use any device, software or routine that interferes with the proper working of the App.
+Introduce any viruses, trojan horses, worms, logic bombs or other material which is malicious or technologically harmful.
+Attempt to gain unauthorized access to, interfere with, damage or disrupt any parts of the App, the server on which the App is stored, or any server, computer or database connected to the App. 
+Attack the App via a denial-of-service attack or a distributed denial-of-service attack.
+Otherwise attempt to interfere with the proper working of the App.
+</div>
+
+<div class="termsPopup-header">Monitoring and Enforcement; Termination</div>
+<div class="termsPopup-content">We have the right to:
+Take appropriate legal action, including without limitation, referral to law enforcement, for any illegal or unauthorized use of the App. 
+Terminate or suspend your access to all or part of the App for any or no reason, including without limitation, any violation of the Terms of Use.
+Without limiting the foregoing, we have the right to fully cooperate with any law enforcement authorities or court order requesting or directing us to disclose the identity or other information of anyone posting any materials on or through the App. YOU WAIVE AND HOLD HARMLESS GEHC AND ITS AFFILIATES, LICENSEES AND APP PROVIDERS FROM ANY CLAIMS RESULTING FROM ANY ACTION TAKEN BY GEHC AND ANY OF THE FOREGOING PARTIES DURING OR AS A RESULT OF ITS INVESTIGATIONS AND FROM ANY ACTIONS TAKEN AS A CONSEQUENCE OF INVESTIGATIONS BY EITHER GEHC OR SUCH PARTIES OR LAW ENFORCEMENT AUTHORITIES.
+However, GEHC does not undertake to review material before it is uploaded on the App, and cannot ensure prompt removal of objectionable material after it has been uploaded. Accordingly, GEHC assumes no liability for any action or inaction regarding transmissions, communications or content provided by any User or third party. GEHC has no liability or responsibility to anyone for performance or nonperformance of the activities described in this section.
+</div>
+<div class="termsPopup-header">Geographic Restrictions</div>
+<div class="termsPopup-content">GEHC provides the App only for use or access by and data transmissions to persons located in the United States. We recognize that it is possible for you to obtain access to the App from any jurisdiction in the world, but we have no practical ability to prevent such access. The App has been designed to comply with the laws of the State of New York and of the United States. If any material on the App is contrary to the laws of the place where you are when you access it, the App is not intended for you, and we ask you not to use the App. You are responsible for informing yourself of the laws of your jurisdiction and complying with them. 
+</div>
+</div>
+ <div class="termsPopup-main">
+<div class="termsPopup-header">Disclaimer of Warranties</div>
+
+<div class="termsPopup-content">You understand that we cannot and do not guarantee or warrant that data uploaded to the App by the Users will be free of viruses or other destructive code. You are responsible for implementing sufficient procedures and checkpoints to satisfy your particular requirements for anti-virus protection and accuracy of data input and output, and for maintaining a means external to our site for the storage, retention, and restoration of any data, in original, copy or back-up form. GEHC WILL NOT BE LIABLE FOR ANY LOSS OR DAMAGE CAUSED BY A DISTRIBUTED DENIAL-OF-APP ATTACK, VIRUSES OR OTHER TECHNOLOGICALLY HARMFUL MATERIAL THAT MAY INFECT YOUR COMPUTER EQUIPMENT, COMPUTER PROGRAMS, DATA OR OTHER PROPRIETARY MATERIAL DUE TO YOUR USE OF THE APP OR ANY DATA OR ITEMS OBTAINED THROUGH THE APP.
+THE APP AND THE CONTENT AVAILABLE THROUGH IT ARE PROVIDED ON AN &ldquo;AS IS&rdquo; AND &ldquo;AS AVAILABLE&rdquo; BASIS. YOU EXPRESSLY AGREE THAT USE OF THE APP AND/OR ITS CONTENT IS AT YOUR SOLE RISK. YOUR USE OF THE APP, INCLUDING, WITHOUT LIMITATION, ALL CONTENT, DATA OR APP DISTRIBUTED BY, DOWNLOADED OR ACCESSED FROM OR THROUGH THE APP, IS AT YOUR SOLE RISK. YOU UNDERSTAND AND AGREE THAT YOU WILL BE SOLELY RESPONSIBLE FOR ANY DAMAGE TO YOUR BUSINESS, YOUR COMPUTER SYSTEM OR LOSS OF DATA THAT RESULTS FROM THE DOWNLOAD OF SUCH CONTENT, DATA AND/OR APP.  YOU ALSO ACKNOWLEDGE AND AGREE THAT GEHC DOES NOT CONTROL INFORMATION, PRODUCTS OR APPS OFFERED BY THIRD PARTIES THROUGH THE APP, EXCEPT AS OTHERWISE AGREED IN WRITING BY GEHC AND ITS AFFILIATES.
+TO THE FULLEST EXTENT PERMISSIBLE PURSUANT TO APPLICABLE LAW, GEHC AND ITS AFFILIATES ASSUME NO RESPONSIBILITY FOR AND DISCLAIM ANY AND ALL WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT OR TO THE ACCURACY, CURRENCY, COMPLETENESS, RELIABILITY OR USEFULNESS OF ANY ADVICE, OPINION, STATEMENT OR OTHER CONTENT OR OF ANY PRODUCTS OR APPS DISTRIBUTED OR MADE AVAILABLE BY THIRD PARTIES THROUGH THE APP. GEHC DOES NOT MAKE ANY WARRANTY THAT THE APP OR ITS CONTENT WILL MEET YOUR REQUIREMENTS, OR THAT THE APP OR ITS CONTENT WILL BE UNINTERRUPTED, TIMELY, SECURE, OR ERROR FREE, OR THAT DEFECTS, IF ANY, WILL BE CORRECTED. NOR DOES GEHC MAKE ANY WARRANTY AS TO THE RESULTS THAT MAY BE OBTAINED FROM USE OF THE APP OR ITS CONTENT OR AS TO THE ACCURACY, COMPLETENESS OR RELIABILITY OF ANY INFORMATION OBTAINED THROUGH USE OF THE APP. 
+GEHC ASSUMES NO RESPONSIBILITY FOR ANY DAMAGES SUFFERED BY A USER, INCLUDING, BUT NOT LIMITED TO, LOSS OF DATA FROM DELAYS, NONDELIVERIES OF CONTENT OR EMAIL, ERRORS, SYSTEM DOWN TIME, MISDELIVERIES OF CONTENT OR EMAIL, NETWORK OR SYSTEM OUTAGES, FILE CORRUPTION, OR APP INTERRUPTIONS CAUSED BY THE NEGLIGENCE OF GEHC, ITS AFFILIATES, ITS LICENSORS, OR A USER'S OWN ERRORS AND/OR OMISSIONS. 
+NO ADVICE OR INFORMATION, WHETHER ORAL OR WRITTEN, OBTAINED BY YOU FROM GEHC OR THROUGH THE APP SHALL CREATE ANY WARRANTY NOT EXPRESSLY STATED IN WRITING. TO THE EXTENT THAT STATE STATUTES OR OTHER REGULATIONS EXPRESSLY FORBID THE LIMITATION OR EXCLUSION OF CERTAIN WARRANTIES OR CONDITIONS, THE ABOVE EXCLUSIONS WILL NOT APPLY TO YOU ONLY TO THE EXTENT CONTRARY TO SUCH EXPRESS STATE LAW.
+</div>
+<div class="termsPopup-header">Limitation on Liability</div>
+<div class="termsPopup-content">YOU ACKNOWLEDGE AND AGREE THAT UNDER NO CIRCUMSTANCES, INCLUDING, WITHOUT LIMITATION, NEGLIGENCE, SHALL GEHC OR ITS PARENTS, SUBSIDIARIES, AFFILIATES, OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, OR SUPPLIERS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL OR CONSEQUENTIAL DAMAGES ARISING FROM OR IN CONNECTION WITH THE USE OF OR THE INABILITY TO USE THE APP OR ANY CONTENT CONTAINED ON THE APP, OR RESULTING FROM UNAUTHORIZED ACCESS TO OR ALTERATION OF YOUR TRANSMISSIONS OR DATA, OR OTHER INFORMATION THAT IS SENT OR RECEIVED OR NOT SENT OR RECEIVED, INCLUDING BUT NOT LIMITED TO, DAMAGES FOR LOSS OF PROFITS, USE, DATA OR OTHER INTANGIBLES, EVEN IF GEHC HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. 
+YOU ACKNOWLEDGE AND AGREE THAT THIS IS A REASONABLE ALLOCATION OF RISK. TO THE EXTENT THAT A STATE STATUTE OR OTHER REGULATION DOES NOT ALLOW THE LIMITATION OR EXCLUSION OF LIABILITY FOR INCIDENTAL OR CONSEQUENTIAL DAMAGES OR OTHER DAMAGES EXCLUDED HEREIN, THE ABOVE EXCLUSIONS WILL NOT APPLY TO YOU ONLY TO THE EXTENT CONTRARY TO SUCH EXPRESS STATE LAW.
+</div>
+<div class="termsPopup-header">Indemnification</div>
+<div class="termsPopup-content">You agree to indemnify, defend and hold harmless GEHC and its affiliates and their officers, directors, employees, contractors, agents, licensors, service providers, subcontractors and suppliers from and against any and all losses, liabilities, expenses, damages and costs, including reasonable attorneys' fees and court costs, arising or resulting from your use of the App and any violation of these Terms of Use, including, without limitation, intellectual property infringement and privacy violations. If you cause a technical disruption of the App or the systems transmitting the App to you or others, you agree to be responsible for any and all losses, liabilities, expenses, damages and costs, including reasonable attorneys' fees and court costs, arising or resulting from that disruption. GEHC reserves the right, at its own expense, to assume exclusive defense and control of any matter otherwise subject to indemnification by you and, in such case, you agree to cooperate with GEHC in the defense of such matter.
+</div>
+<div class="termsPopup-header">Governing Law and Jurisdiction </div>
+<div class="termsPopup-content">The Terms of Use shall be governed by and construed in accordance with the laws of the State of New York, and the federal laws of the United States of America, without giving effect to its conflict of laws provisions. You agree to submit to the personal and exclusive jurisdiction of the state or federal courts located within the State of New York. YOU EXPRESSLY WAIVE ALL RIGHTS TO A JURY TRIAL IN CONNECTION WITH ANY DISPUTE ARISING UNDER THIS TERMS OF USE.
+</div>
+<div class="termsPopup-header">Limitation on Time to File Claims</div>
+<div class="termsPopup-content">TO THE EXTENT PERMITTED BY LAW, ANY CAUSE OF ACTION OR CLAIM YOU MAY HAVE ARISING OUT OF OR RELATING TO THE TERMS OF USE OR THE APP MUST BE COMMENCED WITHIN ONE (1) YEAR AFTER THE CAUSE OF ACTION ACCRUES, OTHERWISE, SUCH CAUSE OF ACTION OR CLAIM IS PERMANENTLY BARRED. 
+</div>
+<div class="termsPopup-header">Waiver and Severability</div>
+<div class="termsPopup-content">No waiver by GEHC of any term or condition set forth in the Terms of Use shall be deemed a further or continuing waiver of such term or condition or a waiver of any other term or condition, and any failure by GEHC to assert a right or provision under the Terms of Use shall not constitute a waiver of such right or provision.
+If any provision of the Terms of Use is held by a court or other tribunal of competent jurisdiction to be invalid, illegal or unenforceable for any reason, such provision shall be eliminated or limited to the minimum extent such that the remaining provisions of the Terms of Use will continue in full force and effect.  
+</div>
+<div class="termsPopup-header">Assignment</div>
+<div class="termsPopup-content">GEHC may assign, transfer, or otherwise dispose our rights and obligations under this Terms of Use, in whole or in part, at any time without notice. You may not assign this contract or transfer any rights to use the App.
+</div>
+<div class="termsPopup-header">No third-party beneficiaries</div>
+<div class="termsPopup-content">This Terms of Use is solely for your and our benefit. It is not for the benefit of any other person, except for GEHC&rsquo;s successors and assigns.
+</div>
+<div class="termsPopup-header">Entire Agreement</div>
+<div class="termsPopup-content">The Terms of Use and the License Terms constitute the sole and entire agreement between you and GEHC with respect to the App and supersede all prior and contemporaneous understandings, agreements, representations and warranties, both written and oral, with respect to the App.  Notwithstanding the foregoing, if you are an enterprise customer and your company has entered into a commercial services agreement for the App with GEHC, then in the event of any conflicts between this Terms of Use and the commercial services agreement, the terms and conditions of that commercial services agreement shall govern and control with respect to the enterprise customer.
+</div>
+</div>
+</div>
+</div>
+<div class="agreeCheckDiv" id="agreeCheckDiv">
+      <input type="checkbox" ng-click="agreeTerms()" ng-model="termsChecked"/><span>Yes, I Agree</span>
+</div>
+
+    </div>
+    
+    <!-- *************** Terms and condition Popup Ends************* -->
+
+<div id="conatctUs" ng-show="conatctUs" style="z-index:10000">
+  <div class="contactclose" ng-click="closeConatctUs()">x</div>
+   <div class="termsandconditionheader">Contact Us</div>
+    <div class="conatctUs_contaiiner">
+      <div class="formContebt">
+         <form name="conatctForm">
+        <div class="conatctformbody">
+           <div class="firstname">
+              <div class="nameText">First Name<sup><span class="mandatiory">*</span></sup></div>
+              <div class="nameInput">
+                <input type="text" ng-model="firstname" name="fname" ng-pattern="/^[a-zA-Z\s]*$/" required />
+                <span ng-show="conatctForm.fname.$error.pattern">Not a valid first name</span><br/>
+                <span ng-class="{hideerror:conatctForm.fname.$valid}" ng-show="!conatctForm.fname.$error.pattern">{{UsernameError1}}</span>
+
+
+                
+              </div>
+           </div>
+           <div class="firstname">
+              <div class="nameText">Last Name<sup><span class="mandatiory">*</span></sup></div>
+              <div class="nameInput">
+                <input type="text" ng-model="lastname" name="lname" required ng-pattern="/^[a-zA-Z\s]*$/" required/>
+                 <span ng-show="conatctForm.lname.$error.pattern">Not a valid last name</span><br/>
+                <span ng-class="{hideerror:conatctForm.lname.$valid}" ng-show="!conatctForm.lname.$error.pattern">{{UsernameError2}}</span> 
+
+              </div>
+           </div>
+           <div class="firstname">
+              <div class="nameText">Email Address<sup><span class="mandatiory">*</span></sup></div>
+              <div class="nameInput">
+                <input type="email" ng-model="ConEmail" name="cemail" required />
+                <span ng-show="conatctForm.cemail.$error.email">Not a valid email</span><br/>
+                <span ng-class="{hideerror:conatctForm.cemail.$valid}" ng-show="!conatctForm.cemail.$error.email">{{UsernameError3}}</span> 
+              </div>
+           </div>
+           <div class="firstname">
+              <div class="nameText">Phone Number<sup><span class="mandatiory">*</span></sup></div>
+              <div class="nameInput">
+                <input type="text" ng-model="phonenum" name="Cphone"  ng-pattern="/^[0-9]{4,20}$/" required />
+                <span ng-show="conatctForm.Cphone.$error.pattern">Not a valid number</span><br/>
+                <span ng-class="{hideerror:conatctForm.Cphone.$valid}" ng-show="!conatctForm.Cphone.$error.pattern">{{UsernameError4}}</span>
+                
+              </div>
+           </div>
+            <div class="firstname">
+              <div class="nameText">Job Title<sup><span class="mandatiory">*</span></sup></div>
+              <div class="nameInput">
+                <input type="text" ng-model="jobtitle" name="Cjob" required />
+                 <span ng-class="{hideerror:conatctForm.Cjob.$valid}">{{UsernameError5}}</span>
+              </div>
+           </div>
+            <div class="firstname">
+              <div class="nameText">Company Facility Name<sup><span class="mandatiory">*</span></sup></div>
+              <div class="nameInput">
+                <input type="text" ng-model="facility" name="Cfacility" required />
+                 <span ng-class="{hideerror:conatctForm.Cfacility.$valid}">{{UsernameError6}}</span>
+              </div>
+           </div>
+            <div class="firstname">
+              <div class="nameText">What is your question?<sup><span class="mandatiory">*</span></sup></div>
+              <div class="nameInput">
+               <!--  <input type="text" ng-model="conatct_question" name="Cquestin" required /> -->
+               <textarea class="whatqes" ng-model="conatct_question" name="Cquestin" required></textarea>
+                 <span ng-class="{hideerror:conatctForm.Cquestin.$valid}">{{UsernameError7}}</span>
+              </div>
+           </div>
+          
+           <div class="savecontact"><button type="submit" ng-click="saveConatcDetails()" ng-class="{'changebtn' : !conatctForm.$valid}">Submit</button></div>
+          </div>
+          
+         </form>
+      </div>
+
+    </div>
+            
+ </div>
+    <!-- *************** Thanks Popup Ends************* -->
+
+<!-- *************** Privecy Popup ************* -->
+    <div id="termspopup" ng-show="PrivecyPopup">
+      <div class="termcross" ng-click="closePrivecy()">x</div>
+       <div class="termsandconditionheader">Privacy Policy as of &nbsp;March 18, 2016</div>
+      <div id="termspopup-container">
+        <div class="termsPopup">
+          
+           <div class="termsPopup-header">Privacy Policy</div>
+
+           <div class="termsPopup-content">
+          This Privacy Policy governs your use of the software application Corvix&trade; (the &ldquo;Application&rdquo;) that was created by GE Healthcare.  This Application is designed to provide information on population demographics, health and hospital resources to help inform health investment planning decisions. 
+         </div>
+       <div class="termsPopup-main">
+         <div class="termsPopup-header" style="margin-bottom:0px">Information GE Collects and How We Use It</div>
+         <div class="termsPopup-subHeader">Collection of personal information</div>
+         <div class="termsPopup-content">To use this Application, you will be required to register and provide your name and business postal and email addresses and GE Healthcare will assign you a user name and password.  You will also be required to complete and submit a survey to GE regarding your experience when using the Application.  GE's usage of this information will be consistent with this Policy.
+         </div>
+        <div class="termsPopup-subHeader">Children&#39;s Privacy</div>
+        <div class="termsPopup-content">This Application is not directed to children under the age of thirteen and we do not knowingly collect personal information from children under the age of thirteen on this Application. If we become aware that we have inadvertently received personal information from a visitor under the age of thirteen, we will delete the information from our records.
+        </div>
+        <div class="termsPopup-subHeader">Use of Personal Information</div>
+         <div class="termsPopup-content">
+          We may use the information collected about you, including your survey responses, for the following purposes:   
+Process, evaluate and respond to your requests, inquiries. Verify your identity to ensure security for the other purposes listed here; Operate, evaluate and improve our business (including developing new products and services; managing our communications; performing market research;; analyzing and improving this Application; administering this Application; and performing accounting, auditing, billing, reconciliation and collection activities); Protect against and prevent fraud, unauthorized transactions, claims and other liabilities, and manage risk exposure and quality; Conduct investigations and comply and enforce applicable legal requirements or, industry standards and our policies and terms, such as this and other GE sites terms of use; and Ensure the safety of GE network services, information resources and employees.
+We also may use personal information for other additional purposes. We will identify these additional purposes at the time of collection.
+</div>
+</div>
+ <div class="termsPopup-main">
+<div class="termsPopup-header" style="margin-bottom:0px">Sharing and Transferring of Your Personal Information</div>
+<div class="termsPopup-subHeader">Sharing & Transfers</div>
+<div class="termsPopup-content">We do not sell or otherwise disclose personal information about our Application users outside GE and its affiliates, except as described here.
+We may share information provided by our users of this Application with service providers we have retained to perform services on our behalf. These service providers are contractually restricted from using or disclosing the information except as necessary to perform services on our behalf or to comply with legal requirements.
+We may disclose information about you (i) if we are required to do so by law or legal process, (ii) to law enforcement authorities or other government officials as required to comply with a legitimate legal request, or (iii) when we believe disclosure is necessary to prevent physical harm or financial loss, or in connection with an investigation of suspected or actual illegal activity.
+We reserve the right to transfer any information we have about you in the event we sell or transfer all or a portion of our business or assets (including through bankruptcy).
+</div>
+<div class="termsPopup-subHeader">Transmission</div>
+<div class="termsPopup-content">We may transmit the personal information we collect on this Application to other countries where we do business, but we will do so only for the purposes described herein. 
+</div>
+<div class="termsPopup-subHeader">How We Protect Your Information</div>
+<div class="termsPopup-content">At GE, our goal is to protect your personal information submitted to us. We maintain administrative, technical and physical safeguards to protect against unauthorized disclosure, use, alteration or destruction of the personal information you provide on this Application. We also employ reasonable technologies to help keep the personal information you provide on this Application secure. 
+</div>
+<div class="termsPopup-subHeader">Changes to This Privacy Policy</div>
+<div class="termsPopup-content">This Privacy Policy may be updated periodically and without prior notice to you to reflect changes in our Application information practices. When changes are made to this Policy it will be posted on the Application and the "last updated" date at the top of this policy will be revised. We also encourage users to periodically check this Policy to understand how GE protects and uses your information. 
+</div>
+<div class="termsPopup-subHeader">How to Contact Us and Update Your Personal Information</div>
+<div class="termsPopup-content">If you have any questions or comments about this Privacy Policy or if you would like us to update information we have about you or your preferences, please contact us by visiting our <a ng-click="showContactFromPrivacy()">Corvix&trade; Feedback Form.</a>
+</div>
+</div>
+ <div class="termsPopup-main">
+<div class="termsPopup-header" style="margin-bottom:0px">Mobile Privacy Policy</div>
+<div class="termsPopup-subHeader">Mobile Information We Collect</div>
+<div class="termsPopup-content">Personally identifiable information (e.g. Name and business postal and email addresses) we collect consists only of what you share with us. 
+If you use any location-enabled products, you may be sending us location information. GE does not store or use this information other than to provide the service you requested. Location-enabled features are opt-in and you have control over your participation and can turn these services off at any time.
+Use of 3rd party services such as social sharing sites (e.g., Facebook & Twitter) is governed by the privacy practices of those services. GE does not capture or store your login information or other personally identifiable information for these services.
+</div>
+<div class="termsPopup-subHeader">Mobile How We Use Collected Information</div>
+<div class="termsPopup-content">We use the information to personalize your experience with the application and to improve your overall experience including the development of new products, services, and features. We also use the information to provide customer support, and when applicable, register and administer your account. Additionally, we may use the information you provide to contact you about updates to our service.
+</div>
+<div class="termsPopup-subHeader">Mobile Information sharing</div>
+<div class="termsPopup-content">GE does not share any collected information with 3rd parties with the following exceptions:
+GE may provide some personal data to third-party partners that are providing services essential to your mobile user experience.
+All requests are sent through your mobile carrier's network and your carrier may have access to it. Consult your carrier's privacy policies for additional information.
+Certain mobile products and services and manufacturers allow you to interact and share your information with others. For example, you may want to Tweet or post to your Facebook page content from a GE mobile application. Consult your mobile device manufacturer, or mobile product or application developer's privacy policies for additional information.
+</div>
+</div>
+</div>
+</div>
+
+
+</div>
+
+
+  
+<!-- *************** FeedBack Popup Starts ************* -->
+
+<div id="FeedbackPopup" ng-show="FeedbackPopup">
+
+      <div class="termcross" ng-click="closeFeedBack()" id="FeedBackCross">x</div> 
+
+      <div id="FeedbackPopup-container">
+
+
+        
+          <div class="Feedback-heading">CORVIX<sup><span>TM</span></sup> FEEDBACK SURVEY</div>
+          <progressbar class="progress-striped active" animate="true" max="100" value="progressValue" type="success"><i><span count-to="{{countTo}}" duration="1" count-from="{{countFrom}}"></span> / 100</i></progressbar> 
+           <div class="requiredLegend" style="color:red;float:left;width:100%;font-style: italic"><sup><span style="color:red;" >*</span></sup>Required question
+           </div> 
+           <div class="Feedback-top">
+            <form name="myForm" ng-model="frm">
+          <div class="FeedbackUSerInfo">
+            <div class="CustName" style="margin-left:0px;">
+               <div>Customer Name</div>
+               <div><input type="text" ng-model="User" name="username" readonly></input></div>
+                  <span style="color:red;font-size:14px" ng-show="myForm.username.$error.required && myForm.username.$dirty">Required</span>
+   <span style="color:red;font-size:14px" ng-show="!myForm.username.$error.minLength && !myForm.username.$error.maxLength && myForm.username.$error.pattern && myForm.username.$dirty">Invalid Username</span>
+   <span style="color:red;font-size:14px" ng-show="!myForm.username.$error.required && (myForm.username.$error.minlength || myForm.username.$error.maxlength) && myForm.username.$dirty">Username ust be between 5 and 20 characters.</span>
+
+                
+            </div>
+            <div class="CustName">
+               <div>Business Address<sup><span style="color:red;font-size:14px">*</span></sup></div>
+               <div><input type="text" ng-model="businessAddress" name="bAddress" id="addr"></input></div>
+                
+                <span style="color:red;font-size:14px" ng-show="myForm.bAddress.$error.required && myForm.bAddress.$dirty">Required</span>
+            </div>
+
+            <div class="CustName">
+               <div>Business Email<sup><span style="color:red;font-size:14px">*</span></sup></div>
+               <div><input type="email" ng-model="businessEmail" name="BEmail" id="email"></input></div>
+                <span style="color:red;font-size:14px" ng-show="myForm.BEmail.$error.required && myForm.BEmail.$dirty">Required</span>
+                <span style="color:red;font-size:14px" ng-show="myForm.BEmail.$error.email && myForm.BEmail.$dirty">Invalid email</span>
+
+            </div>
+          </div>
+          <div class="feedbackHead"><span>CUSTOMER PROBLEM/PAIN POINTS</span></div>
+          <div class="CUSTOMER-PROBLEM_Info">
+          
+             <div class="qes2">1. Could you see yourself or someone in your organization using a tool like this to gain insight on specific challenges your organization faces?<sup><span style="color:red;font-size:14px">*</span></sup></div>
+             <div class="if-Yes-No">
+               <input type="radio" name="whatchllenge1" value="Yes1" ng-model="whatchllenge"
+                ng-checked="whatchllenge1" ng-click="enableTxt2()"><span>If yes, for what kind of challenges could you see it being used?</span>
+             </div>
+             <div class="if-Yes-No">
+               <input type="radio" name="whatchllenge1" value="No1" ng-model="whatchllenge" ng-checked="whatchllenge1" ng-click="enableTxt2()"><span>If no, why not?</span>
+             </div>
+             <div class=""><textarea ng-model="customerProblem_2" ng-required="whatchllengeTxt11" name="c_prob2" id="que2" ng-hide="que2Txt"></textarea>
+                <span style="color:red;font-size:14px" ng-show="requiredCust2">Required</span>
+             </div>
+
+             <div class="qes2">2. Will a tool like this that visualizes demographic, health and resource data be valuable to you or your organization for population health management and/or for future planning? 
+<sup><span style="color:red;font-size:14px">*</span></sup></div>
+              <div class="if-Yes-No">
+               <input type="radio" name="whatchllenge2" value="Yes2" ng-model="futureplanning" ng-checked="whatchllenge2"  ng-click="enableTxt3()"><span>If yes, how?</span>
+             </div>
+             <div class="if-Yes-No">
+               <input type="radio" name="whatchllenge2" value="No2" ng-model="futureplanning" ng-checked="whatchllenge2"  ng-click="enableTxt3()"><span>If no, why not?</span>
+             </div>
+             <div class=""><textarea ng-model="customerProblem_3" ng-required="futureplanningTxt" name="c_prob3" id="que3" ng-hide="que3Txt"></textarea></div>
+              <span style="color:red;font-size:14px" ng-show="requiredCust3">Required</span>
+          </div>
+     <div class="feedbackHead"><span>MARKET</span></div>
+        <div class="marketContent">
+          <div class="qes1">3. Are you aware of other tools presenting similar types of information?<sup><span style="color:red;font-size:14px">*</span></sup></div>
+           <div class="chekboxDiv" style="margin-top: -10px;">
+             
+              <div class="chekboxDiv1">
+                <input type="radio" ng-model="MarketRadio" value="MarketYes" ng-checked="checkbox6" ng-click="checkQue13()"><span>Yes, my organization offers internal tools like this</span>
+              </div>
+               <div class="chekboxDiv2">
+                <input type="radio" ng-model="MarketRadio" value="MarketNo" ng-checked="checkbox6" ng-click="checkQue13()"><span>No</span>
+              </div>
+              <div class="chekboxDiv3">
+                   <input type="radio"  ng-model="MarketRadio" value="Marketfromother" ng-checked="checkbox6" ng-click="checkQue13()"><span>Yes, I am aware of similar tools from other sources
+</span>  
+              </div>
+              <div class=""><textarea ng-model="marketTxt" id="que13" ng-hide="que13Txt"></textarea></div>
+          </div>
+           </div>
+
+      
+        <div class="feedbackHead"><span>USER EXPERIENCE</span></div>
+        <div class="UserExpConetnt">
+           <div class="qes1">4. How would you rate the following features in terms of usefulness or value to you? <sup><span style="color:red;font-size:14px">*</span></sup>
+           </div>
+              <div class="bulletRating"><span class="bulletIcon"></span> &nbsp;Content</div>
+              <div class="ratingDiv">
+              <div class="rating1">1. Ability to specify geographic area of focus<sup><span style="color:red;font-size:14px">*</span></sup></div>
+                <div class="acidjs-rating-stars" style="width:90%;" id="userexp1">
+                 <form class="rating-form">
+                 
+                  <div style="float:left" id="userexp1">
+                  <input type="radio" name="group-1" id="group-1-0" value="5"  class="starLable" /><label for="group-1-0" ng-click="ExcellentExp1()"></label>
+                 <input type="radio" name="group-1" id="group-1-1" value="4" ng-click="VerygoodExp1()"  class="starLable"/><label for="group-1-1"></label>
+                 <input type="radio" name="group-1" id="group-1-2" value="3" class="starLable" /><label for="group-1-2" ng-click="goodExp1()" ></label>
+                 <input type="radio" name="group-1" id="group-1-3" value="2"  class="starLable"/><label for="group-1-3" ng-click="acceptableExp1()"></label>
+                 <input type="radio" name="group-1" id="group-1-4"  value="1" class="starLable" /><label for="group-1-4" ng-click="poorExp1()"  ></label>
+               </div>
+               <span style="color:green;float: left;width: 33%;text-align: left;margin-left: 8px;">{{ExpValue1}}</span>
+              </form>
+           </div>
+            </div>
+            <div class="ratingDiv">
+               <div class="rating1">2. Ability to select key subcategories of interest<sup><span style="color:red;font-size:14px">*</span></sup></div>
+                 <div class="acidjs-rating-stars">
+                 <form class="rating-form">
+                  <span>{{ExpValue2}}</span>
+                  <input type="radio" name="group-1" id="group-1-5" value="5"  class="starLable" />
+                  <label for="group-1-5" ng-click="ExcellentExp2()"></label>
+                  <input type="radio" name="group-1" id="group-1-6" value="4"  class="starLable"/>
+                  <label for="group-1-6" ng-click="VerygoodExp2()" ></label>
+                  <input type="radio" name="group-1" id="group-1-7" value="3" class="starLable" />
+                 <label for="group-1-7" ng-click="goodExp2()" class="rataingLabel" ></label>
+                 <input type="radio" name="group-1" id="group-1-8" value="2"  class="starLable"/>
+                 <label for="group-1-8" ng-click="acceptableExp2()"></label>
+                 <input type="radio" name="group-1" id="group-1-9"  value="1" class="starLable" />
+                 <label for="group-1-9" ng-click="poorExp2()" ></label>
+              </form>
+           </div>
+            </div>
+            <div class="ratingDiv">
+               <div class="rating1">3. Degree of information available per hospital<sup><span style="color:red;font-size:14px">*</span></sup></div>
+                 <div class="acidjs-rating-stars">
+                 <form class="rating-form">
+                  <span>{{ExpValue3}}</span>
+                  <input type="radio" name="group-1" id="group-1-10" value="5"  class="starLable" />
+                  <label for="group-1-10" ng-click="ExcellentExp3()"></label>
+                 <input type="radio" name="group-1" id="group-1-11" value="4"   class="starLable"/>
+                 <label for="group-1-11" ng-click="VerygoodExp3()"></label>
+                 <input type="radio" name="group-1" id="group-1-12" value="3" class="starLable" />
+                 <label for="group-1-12" ng-click="goodExp3()" ></label>
+                 <input type="radio" name="group-1" id="group-1-13" value="2"  class="starLable"/>
+                 <label for="group-1-13" ng-click="acceptableExp3()"></label>
+                 <input type="radio" name="group-1" id="group-1-14"  value="1" class="starLable" />
+                 <label for="group-1-14" ng-click="poorExp3()"  ></label>
+              </form>
+           </div>
+            </div>
+             <div class="ratingDiv">
+               <div class="rating1">4. Interpreting data presented on the main screen<sup><span style="color:red;font-size:14px">*</span></sup></div>
+                 <div class="acidjs-rating-stars">
+                 <form class="rating-form">
+                  <span>{{ExpValue4}}</span>
+                  <input type="radio" name="group-1" id="group-1-15" value="5"  class="starLable" />
+                  <label for="group-1-15" ng-click="ExcellentExp4()"></label>
+                 <input type="radio" name="group-1" id="group-1-16" value="4"   class="starLable"/>
+                 <label for="group-1-16" ng-click="VerygoodExp4()"></label>
+                 <input type="radio" name="group-1" id="group-1-17" value="3" class="starLable" />
+                 <label for="group-1-17" ng-click="goodExp4()" ></label>
+                 <input type="radio" name="group-1" id="group-1-18" value="2"  class="starLable"/>
+                 <label for="group-1-18" ng-click="acceptableExp4()"></label>
+                 <input type="radio" name="group-1" id="group-1-19"  value="1" class="starLable" />
+                 <label for="group-1-19" ng-click="poorExp4()"  ></label>
+              </form>
+           </div>
+            </div>
+             <div class="ratingDiv">
+               <div class="rating1">5. Level of insight provided on the Insight screens<sup><span style="color:red;font-size:14px">*</span></sup></div>
+                 <div class="acidjs-rating-stars">
+                 <form class="rating-form">
+                  <span>{{ExpValue5}}</span>
+                  <input type="radio" name="group-1" id="group-1-20" value="5"  class="starLable" />
+                  <label for="group-1-20" ng-click="ExcellentExp5()"></label>
+                 <input type="radio" name="group-1" id="group-1-21" value="4"   class="starLable"/>
+                 <label for="group-1-21" ng-click="VerygoodExp5()"></label>
+                 <input type="radio" name="group-1" id="group-1-22" value="3" class="starLable" />
+                 <label for="group-1-22" ng-click="goodExp5()" ></label>
+                 <input type="radio" name="group-1" id="group-1-23" value="2"  class="starLable"/>
+                 <label for="group-1-23" ng-click="acceptableExp5()"></label>
+                 <input type="radio" name="group-1" id="group-1-24"  value="1" class="starLable" />
+                 <label for="group-1-24" ng-click="poorExp5()"  ></label>
+              </form>
+           </div>
+            </div>
+
+          
+           <div class="bulletRating"><span class="bulletIcon"></span> &nbsp;Design features</div>
+             <div class="ratingDiv">
+               <div class="rating1">1. Heat map colors on the Main screen<sup><span style="color:red;font-size:14px">*</span></sup></div>
+                 <div class="acidjs-rating-stars">
+                 <form class="rating-form">
+                  <span>{{ExpValue6}}</span>
+                  <input type="radio" name="group-1" id="group-1-25" value="5"  class="starLable" />
+                  <label for="group-1-25" ng-click="ExcellentExp6()"></label>
+                 <input type="radio" name="group-1" id="group-1-26" value="4"   class="starLable"/>
+                 <label for="group-1-26" ng-click="VerygoodExp6()"></label>
+                 <input type="radio" name="group-1" id="group-1-27" value="3" class="starLable" />
+                 <label for="group-1-27" ng-click="goodExp6()" ></label>
+                 <input type="radio" name="group-1" id="group-1-28" value="2"  class="starLable"/>
+                 <label for="group-1-28" ng-click="acceptableExp6()"></label>
+                 <input type="radio" name="group-1" id="group-1-30"  value="1" class="starLable" />
+                 <label for="group-1-30" ng-click="poorExp6()"  ></label>
+              </form>
+           </div>
+            </div>
+              <div class="ratingDiv">
+               <div class="rating1">2. Font size on the Main screen<sup><span style="color:red;font-size:14px">*</span></sup></div>
+                 <div class="acidjs-rating-stars">
+                 <form class="rating-form">
+                   <span>{{ExpValue7}}</span>
+                  <input type="radio" name="group-1" id="group-1-31" value="5"  class="starLable" />
+                  <label for="group-1-31" ng-click="ExcellentExp7()"></label>
+                 <input type="radio" name="group-1" id="group-1-32" value="4"   class="starLable"/>
+                 <label for="group-1-32" ng-click="VerygoodExp7()"></label>
+                 <input type="radio" name="group-1" id="group-1-33" value="3" class="starLable" />
+                 <label for="group-1-33" ng-click="goodExp7()" ></label>
+                 <input type="radio" name="group-1" id="group-1-34" value="2"  class="starLable"/>
+                 <label for="group-1-34" ng-click="acceptableExp7()"></label>
+                 <input type="radio" name="group-1" id="group-1-35"  value="1" class="starLable" />
+                 <label for="group-1-35" ng-click="poorExp7()"  ></label>
+              </form>
+           </div>
+            </div>
+              <div class="ratingDiv">
+               <div class="rating1">3. Colors used on the Filter tab<sup><span style="color:red;font-size:14px">*</span></sup></div>
+                 <div class="acidjs-rating-stars">
+                 <form class="rating-form">
+                  <span>{{ExpValue8}}</span>
+                  <input type="radio" name="group-1" id="group-1-36" value="5"  class="starLable" />
+                  <label for="group-1-36" ng-click="ExcellentExp8()"></label>
+                 <input type="radio" name="group-1" id="group-1-37" value="4"   class="starLable"/>
+                 <label for="group-1-37" ng-click="VerygoodExp8()"></label>
+                 <input type="radio" name="group-1" id="group-1-38" value="3" class="starLable" />
+                 <label for="group-1-38" ng-click="goodExp8()" ></label>
+                 <input type="radio" name="group-1" id="group-1-39" value="2"  class="starLable"/>
+                 <label for="group-1-39" ng-click="acceptableExp8()"></label>
+                 <input type="radio" name="group-1" id="group-1-40"  value="1" class="starLable" />
+                 <label for="group-1-40" ng-click="poorExp8()"  ></label>
+              </form>
+           </div>
+            </div>
+              <div class="ratingDiv">
+               <div class="rating1">4. Colors used on the Insight screens<sup><span style="color:red;font-size:14px">*</span></sup></div>
+                 <div class="acidjs-rating-stars">
+                 <form class="rating-form">
+                  <span>{{ExpValue9}}</span>
+                  <input type="radio" name="group-1" id="group-1-41" value="5"  class="starLable" />
+                  <label for="group-1-41" ng-click="ExcellentExp9()"></label>
+                 <input type="radio" name="group-1" id="group-1-42" value="4"   class="starLable"/>
+                 <label for="group-1-42" ng-click="VerygoodExp9()"></label>
+                 <input type="radio" name="group-1" id="group-1-43" value="3" class="starLable" />
+                 <label for="group-1-43" ng-click="goodExp9()" ></label>
+                 <input type="radio" name="group-1" id="group-1-44" value="2"  class="starLable"/>
+                 <label for="group-1-44" ng-click="acceptableExp9()"></label>
+                 <input type="radio" name="group-1" id="group-1-45"  value="1" class="starLable" />
+                 <label for="group-1-45" ng-click="poorExp9()"  ></label>
+              </form>
+           </div>
+            </div>
+              <div class="ratingDiv">
+               <div class="rating1">5. Font size used on the Insight screens<sup><span style="color:red;font-size:14px">*</span></sup></div>
+                 <div class="acidjs-rating-stars">
+                 <form class="rating-form">
+                   <span>{{ExpValue10}}</span>
+                  <input type="radio" name="group-1" id="group-1-46" value="5"  class="starLable" />
+                  <label for="group-1-46" ng-click="ExcellentExp10()"></label>
+                 <input type="radio" name="group-1" id="group-1-47" value="4"   class="starLable"/>
+                 <label for="group-1-47" ng-click="VerygoodExp10()"></label>
+                 <input type="radio" name="group-1" id="group-1-48" value="3" class="starLable" />
+                 <label for="group-1-48" ng-click="goodExp10()" ></label>
+                 <input type="radio" name="group-1" id="group-1-49" value="2"  class="starLable"/><label for="group-1-49" ng-click="acceptableExp10()"></label>
+                 <input type="radio" name="group-1" id="group-1-50"  value="1" class="starLable" /><label for="group-1-50" ng-click="poorExp10()"  ></label>
+              </form>
+           </div>
+            </div>
+              <div class="ratingDiv">
+               <div class="rating1">6. Colors used on the Insight screens<sup><span style="color:red;font-size:14px">*</span></sup></div>
+                 <div class="acidjs-rating-stars">
+                 <form class="rating-form">
+                  <span>{{ExpValue11}}</span>
+                  <input type="radio" name="group-1" id="group-1-51" value="5"  class="starLable" />
+                  <label for="group-1-51" ng-click="ExcellentExp11()"></label>
+                 <input type="radio" name="group-1" id="group-1-52" value="4"  class="starLable"/>
+                 <label for="group-1-52" ng-click="VerygoodExp11()"></label>
+                 <input type="radio" name="group-1" id="group-1-53" value="3" class="starLable" />
+                 <label for="group-1-53" ng-click="goodExp11()" ></label>
+                 <input type="radio" name="group-1" id="group-1-54" value="2"  class="starLable"/>
+                 <label for="group-1-54" ng-click="acceptableExp11()"></label>
+                 <input type="radio" name="group-1" id="group-1-55"  value="1" class="starLable" /><label for="group-1-55" ng-click="poorExp11()"  ></label>
+              </form>
+            </div>
+            </div>
+         
+        </div>
+
+         <div class="feedbackHead"><span>TOOL CONTENT</span></div>
+          <div class="qes1">5. What functions or features would you like to see added to make this tool more useful?  <sup><span style="color:red;font-size:14px">*</span></sup></div>
+          <div class=""><textarea ng-model="toolContent_2"  id="que5"></textarea></div>
+          <div class="qes1">6. What additional questions would you like to ask (or what additional information would you like to see) to increase the usefulness of this tool?<sup><span style="color:red;font-size:14px">*</span></sup></div>
+          <div class=""><textarea ng-model="toolContent_1" id="que4"></textarea></div>
+         
+          <div class="updatedToolDiv">
+            <div class="updatedToolDivHeading">7. Consider a tool like this that includes imaging equipment install base data.  If imaging install base data was included, would this tool be valuable to you for: (check any that apply) 
+<sup><span style="color:red;font-size:14px">*</span></sup>
+            </div>
+          
+            <div class="chekboxDiv">
+              <div class="chekboxDiv1">
+                <input type="checkbox" ng-model="Capitalplanning" ng-checked="checkbox1" ng-click="checkQue6()">
+                <span>Capital planning</span>
+              </div>
+              <div class="chekboxDiv2">
+                <input type="checkbox" ng-model="Increasingpatient" ng-checked="checkbox2" ng-click="checkQue6()">
+                <span>Increasing patient referrals</span>
+              </div>
+              <div class="chekboxDiv3">
+                   <input type="checkbox" ng-model="Assetoptimization" ng-checked="checkbox3" ng-click="checkQue6()">
+                   <span>Asset optimization</span>  
+              </div>
+              <div class="chekboxDiv1">
+                <input type="checkbox" ng-model="ProtocolStandardization" ng-checked="checkbox4" ng-click="checkQue6()">
+                <span>Protocol standardization by site</span>
+              </div>
+
+              <div class="chekboxDiv2">
+                <input type="checkbox" ng-model="Reimbursementoptimization" ng-checked="checkbox4" ng-click="checkQue6()">
+                <span>Reimbursement optimization planning</span>
+              </div>
+              <div class="chekboxDiv2">
+                <input type="checkbox"ng-model="other" ng-checked="checkbox5" ng-click="checkQue6()"><span>Other</span>
+              </div>
+               <div class="chekboxDiv1">
+                <input type="checkbox" ng-model="notUseful" ng-checked="checkbox4" ng-click="checkQue6()">
+                <span>Not useful to me</span>
+              </div>
+            </div>
+         </div>
+          <div class="feedbackHead"><span>FINAL</span></div>
+          <div class="qes1">8. Any additional comments or suggestions?</div>
+          <div class=""><textarea ng-model="fianl" id="que17" ng-change="changeQue17()"></textarea></div>
+          </div>
+         <button type="submit" id="feedbackSub" ng-click="saveNewFeedback()"  ng-show="submitShow">Submit</button>
+        </div>
+          </form>
+        
+       
+        
+     
+        
+     </div>
+   </div> 
+<!-- *********************** feedbackEnds*********************************** -->
+
+
+    
+    <toaster-container toaster-options="{'time-out': 2000,'position-class':'toast-top-center'}"></toaster-container>
+    <div ng-view></div>
+
+  <div id="HospitalAttributes" ng-show="hosptialAtrribute">
+          <div id="HospitalContainer">
+               <div class="hospitalClose" ng-click="demo1()">x</div>
+               <div class="hospitalHeader">Hospital Attributes</div>
+               <div class="hospitalPopupContent">
+                   <div class="hospitalResourcesHeding first-second-tab" ng-model="Gerneral"  ng-click="Gerneral=!Gerneral"> General
+                     <span>
+                       <img src="images/expandMenu.png" class="collapseImgIcon" ng-class="{'RotateArrorw' :  Gerneral, '' : !Gerneral}">
+                     </img>
+                   </span>
+                 </div>
+                 <div class="generalHeaderInfo" ng-show="Gerneral" ng-class="{'abcvcvc' :  Gerneral, '' : !Gerneral}">
+                   <div class ="HospitalName">
+                      <div id="hospitalhead" class="labelfont">Hospital Name</div>
+                      <div id="hospitalname namefont">Froedtert Moorlane Reserve health Center</div>
+                    </div>
+                    <div class="GeneralMiddle">
+                        <div class="first3">
+                            <div class="address labelfont">HQ Address</div>
+                            <div class="city labelfont">City</div>
+                            <div class="state labelfont">State</div>
+                            <div class="address namefont">4805 Moraland RD New Barlin.</div>
+                            <div class="city namefont">Wiscouncin</div>
+                            <div class="state namefont">Milwaukee</div>
+                        </div>
+                        <div class="last2">
+                            <div class="address labelfont">ZIP</div>
+                            <div class="city labelfont">County</div>
+                            <div class="address namefont">45781</div>
+                           <div class="city namefont">US</div>
+                        </div>
+                    </div>                          
+                  </div>
+                  <div class="hospitalResourcesHeding first-second-tab" ng-model="Afillation" ng-click=" Afillation=!Afillation">Affiliation
+                     <span>
+                       <img src="images/expandMenu.png"  class="collapseImgIcon" id="img1" ng-class="{'RotateArrorw' : Afillation, '' : !Afillation}">
+                       </img>
+                     </span>
+                 </div>    
+                 <div class="AffiliationsDetails" ng-show="Afillation">
+                        <div class="namenetork">
+                        <div class="netlable labelfont">Network Name</div>
+                        <div class="netname labelfont">Network Parent Name</div>
+                     </div>
+                     <div class="parentnet">
+                       <div class="parentnetlable namefont">Name Of Network</div>
+                       <div class="parentnetbname namefont">Name Of Parent Network</div>
+                   </div>
+                     <div class="AffiliationMiddle">
+                        <div class="ACOAffi1">
+                          <div class="ACOlable labelfont">ACO Affiliation</div>
+                          <div class="ACOlist">
+                            <ul>
+                              <li>List Of ACO Membership</li>
+                              <li>List Of ACO Membership</li>
+                              <li>List Of ACO Membership</li>
+                            </ul>
+                          </div>
+                        </div> 
+                        <div class="ACOAffi2">
+                          <div class="ACOlable labelfont">CIN Affiliation</div>
+                          <div class="ACOlist">
+                            <ul>
+                              <li>List Of Cinically Integrated Network Affiliation</li>
+                              <li>List Of Cinically Integrated Network Affiliation</li>
+                              <li>List Of Cinically Integrated Network Affiliation</li>
+                            </ul>
+                           </div>
+                        </div>  
+                     </div>
+                    <div class="programId ">
+                        <div class="Idleft ACOAffi1">
+                          <div class="address labelfont">340B ID</div>
+                          <div class="address namefont">340 Drug Pricing Program ID</div>
+                        </div>
+                        <div class="Idright ACOAffi2">
+                          <div class="labelfont">Total Patient Revenue</div>
+                          <div class="namefont">Total Patient Revenue</div>
+                        </div>
+                   </div>
+              </div>
+               <div class="hospitalResourcesHeding first-second-tab" ng-model="HospitalResources" ng-click="HospitalResources=!HospitalResources">Hospital Resources
+                     <span>
+                       <img src="images/expandMenu.png" class="collapseImgIcon" ng-class="{'RotateArrorw' : HospitalResources, '' : !HospitalResources}">
+                      </img>
+                    </span>
+                </div>
+              <div class="hosptalowner" ng-show="HospitalResources">
+                 <ul class="">
+                  <li>
+                     <span class="LiSpantittle">Hospital Ownership</span>
+                     <select id="listselect">
+                       <option>list</option>
+                       <option>list1</option>
+                       <option>list2</option>
+                       <option>list</option>
+                    </select>
+                  </li>
+                  <li>
+            		<span class="LiSpantittle">Number of Staffed Beds</span>
+            		<div class="sliderDivIndex">
+                   <rzslider rz-slider-model="hospitalAttributeData.numberBeds" rz-slider-options="read_only_slider.options"></rzslider>
+            		</div>
+                
+          		</li>
+              <li>
+               <span class="LiSpantittle">Magnet Designation</span>
+                             <span class="field-tip">
+                              <img src="images/alert.png" class="alertImg">
+                                 <span class="tip-content">Put help text in here!</span>
+                             </span>
+
+               <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"  ng-model="filterData.magntDesig" onclick="return false">
+                             <label class="onoffswitch-label" for="hospitalResource.magntDesig">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+            </li>
+            <li>
+              <span class="LiSpantittle">Organ Transplant Network</span>
+                <span class="field-tip">
+                              <img src="images/alert.png" class="alertImg">
+                                 <span class="tip-content">Put help text in here!</span>
+                             </span>
+                               <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"  ng-model="filterData.organTrans">
+                             <label class="onoffswitch-label" for="hospitalResource.organTrans">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+
+            </li>
+            <li>
+              <span class="LiSpantittle">Cancer Accreditation</span>
+               <span class="field-tip">
+                                <img src="images/alert.png" class="alertImg">
+                                <span class="tip-content">Put help text in here!</span>
+                             </span>
+                <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" ng-model="filterData.canseAccred">
+                             <label class="onoffswitch-label" for="hospitalResource.canseAccred">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+            </li>
+            <li>
+              <span class="LiSpantittle">Sole Community Hospital</span>
+               <span class="field-tip">
+                              <img src="images/alert.png" class="alertImg">
+                              <span class="tip-content">Put help text in here!</span>
+                            </span>
+                <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"  ng-model="filterData.soleComm">
+                             <label class="onoffswitch-label" for="hospitalResource.soleComm">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+            </li>
+            <li>
+              <span class="LiSpantittle">Academic Medical Center</span>
+               <span class="field-tip">
+                                 <img src="images/alert.png" class="alertImg">
+                                 <span class="tip-content">Put help text in here!</span>
+                            </span>
+                <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"  ng-model="filterData.academicMedi">
+                             <label class="onoffswitch-label" for="hospitalResource.academicMedi">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+            </li>
+            <li>
+              <span class="LiSpantittle">Council Teaching Membership</span>
+              <span class="field-tip">
+                                <img src="images/alert.png" class="alertImg">
+                                 <span class="tip-content">Put help text in here!</span>
+                            </span>  
+                          <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"  ng-model="filterData.councilMeet">
+                             <label class="onoffswitch-label" for="hospitalResource.councilMeet">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+            </li> 
+
+          
+                 <li>
+              <span class="LiSpantittle">HHI</span>
+                <span class="field-tip">
+                     <img src="images/alert.png" class="alertImg">
+                      <span class="tip-content">Put help text in here!</span>
+                  </span>
+            
+                <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" ng-model="filterData.HHI">
+                             <label class="onoffswitch-label" for="hospitalResource.HHI">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+               </div>
+            </li> 
+
+           </ul>  
+         
+        </div>
+	     
+	        <div class="hospitalResourcesHeding first-second-tab" ng-model="collapsed" ng-click="medicare=!medicare" >Medicare Penalties And Incentives
+            <span>
+                 <img src="images/expandMenu.png" class="collapseImgIcon" ng-class="{'RotateArrorw' : medicare, '' : !medicare}">
+                 </img>
+               </span>
+
+            </div>
+             <div ng-show="medicare" class="abcccc">
+
+                  <div class="MedicareLeft">
+                       <div class="MedicareLeft-tittle labelfont">DSH PAYMENT MEDICARE</div>
+                       <div class="MedicareLeftText">Medicare Disproportinate Share Hospital</div>
+                        
+                       <div class="MedicareLeft-tittle labelfont label2">READMISSION PENALTY FY 2015</div>
+                       <div class="MedicareLeftText">Payment</div>
+
+                       <div class="MedicareLeft-tittle labelfont label2">EST READMISSION PENALTY FY 2015</div>
+                       <div class="MedicareLeftText">FY 2015 Medicare Readmission Rate Penalty</div>
+
+
+                  </div>
+                  <div class="MedicareRight">
+                       <div class="MedicareLeft-tittle labelfont">VBP PERCENTAGE FY2015</div>
+                       <div class="MedicareLeftText">Est. 2015 Rev Loss Due To Readmission</div>
+
+                       <div class="MedicareLeft-tittle labelfont label2">VBP PERCENTAGE FY2015</div>
+                       <div class="MedicareLeftText">Penalty</div>
+
+                       <div class="MedicareLeft-tittle labelfont label2">EST VBP ADJUSTMENT FY2015</div>
+                       <div class="MedicareLeftText">FY 2015 Medicare Readmission Rate Penalty</div>
+                  </div>
+             </div>
+
+              <div class="hospitalResourcesHeding first-second-tab" ng-model="collapsed" ng-click="FinancialMatrics=!FinancialMatrics" >Financial Matrix
+
+                <span>
+                 <img src="images/expandMenu.png" class="collapseImgIcon" ng-class="{'RotateArrorw' : FinancialMatrics, '' : !FinancialMatrics}">
+                 </img>
+               </span>
+             </div>
+
+             <div class="FinancialMatrics" ng-show="FinancialMatrics">
+
+                   <div class="Revenue">
+                   <div class="RevenueHeader"><span>Revenue</span></div>
+                   <div class="RevenueContent">
+                       <div class="RevenueContentLetf"> 
+                         <div class="RevenueLeftTittle labelfont">Total Patient Revenue</div>
+                         <div class="RevenueLeftText">Total Patient Revenue</div> 
+                         <div class="RevenueLeftTittle labelfont label2">Total Inpatient Revenue</div>
+                         <div class="RevenueLeftText">Total IN Patient Revenue</div>
+                         <div class="RevenueLeftTittle labelfont label2">Total Outpatient Revenue</div>
+                         <div class="RevenueLeftText">Total Out Patient Revenue</div>
+                         <div class="RevenueLeftTittle labelfont label2">Patient Discount</div>
+                         <div class="RevenueLeftText">Patient Allowance And Discount</div>
+                        <div class="RevenueLeftTittle labelfont label2">Net Patient Revenue</div>
+                         <div class="RevenueLeftText">Net Patient Revenue</div>   
+                      </div>
+
+                       <div class="RevenueContentRight"> 
+                         <div class="RevenueLeftTittle labelfont ">Net Medicare Revenue</div>
+                         <div class="RevenueLeftText">Net Medicare Revenue</div> 
+                         <div class="RevenueLeftTittle labelfont label2">Net Medicaid Revenue</div>
+                         <div class="RevenueLeftText">Net Medicaid Revenue</div> 
+                         <div class="RevenueLeftTittle labelfont label2">PCT Patient Discount</div>
+                         <div class="RevenueLeftText">Pateint Discount Percentage</div> 
+                         <div class="RevenueLeftTittle labelfont label2">Net Operation Margin</div>
+                         <div class="RevenueLeftText">Net Operating Profit Margin</div> 
+                         <div class="RevenueLeftTittle labelfont label2">Revenue</div>
+                         <div class="RevenueLeftText">Total REvenue</div> 
+
+                      </div> 
+                   </div>
+
+
+                </div>
+
+
+                <div class="Revenue">
+                   <div class="RevenueHeader"><span>Expenses And Budgets</span></div>
+                   <div class="RevenueContent">
+                       <div class="RevenueContentLetf"> 
+                         <div class="RevenueLeftTittle labelfont">Total Operating Expense</div>
+                         <div class="RevenueLeftText">Total Operating Expense</div> 
+                         <div class="RevenueLeftTittle labelfont label2">IT Operating Spend</div>
+                         <div class="RevenueLeftText">IT Operating Spend</div>
+                      </div>
+                       <div class="RevenueContentRight"> 
+                         <div class="RevenueLeftTittle labelfont ">IT Operating Spend</div>
+                         <div class="RevenueLeftText">IT Operating Spend</div> 
+                     </div> 
+                   </div>
+                </div>
+                   <div class="Revenue">
+                   <div class="RevenueHeader"><span>Income And EBITDA</span></div>
+                   <div class="RevenueContent">
+                       <div class="RevenueContentLetf"> 
+                         <div class="RevenueLeftTittle labelfont">Net Income</div>
+                         <div class="RevenueLeftText">Net Income</div> 
+                    </div>
+                       <div class="RevenueContentRight"> 
+                         <div class="RevenueLeftTittle labelfont "></div>
+                         <div class="RevenueLeftText"></div> 
+                     </div> 
+                   </div>
+                </div>
+                 <div class="Revenue">
+                   <div class="RevenueHeader"><span>Assets</span></div>
+                   <div class="RevenueContent">
+                       <div class="RevenueContentLetf"> 
+                         <div class="RevenueLeftTittle labelfont">Cash On Hand</div>
+                         <div class="RevenueLeftText">Cash On Hand</div> 
+                    </div>
+                       <div class="RevenueContentRight"> 
+                         <div class="RevenueLeftTittle labelfont "></div>
+                         <div class="RevenueLeftText"></div> 
+                     </div> 
+                   </div>
+                </div>
+             </div>
+
+    </div>            
+</div>
+     
+</div>   
+   
+
+
+
+    <div class="bottomlinks" id="bottomlinks">
+
+  <span ng-show="dwnldLink" ><a href="" ng-click="dwnlodFeed()" style="color:#ccc;text-decoration:none">Download Feedback</a></span>
+  <span ng-show="downloadcontact"><a href="" ng-click="dwnlodCont()" style="text-decoration: none;color: #ccc;">Download Contact Details</a></span>
+	  <span ng-click="showPrivecy()">Privacy</span>
+		<span ng-click="termsPopup=true">Terms</span>
+		<span ng-click="showconatctUs()">Contact</span>
+		<span style="cursor:auto;">I</span>	
+		<span style="cursor:auto;">&#xA9 2016 General Electric</span>		
+	</div>
+	
+	<div id="corvix-overlay"></div>
+	<div id="corvix-loading"> <div><img src="images/Loader.gif" /></div><div>{{displayMessage}}</div></div>
+	  <div id="helpPopup-overlay" ng-show="helpPopup"></div>
+  	<div id="helpPopup-overlay" ng-show="FeedbackPopup"></div>
+    <div id="helpPopup-overlay" ng-show="termsPopup"></div>
+    <div id="helpPopup-overlay" ng-show="thankspopup"></div>
+    <div id="helpPopup-overlay" ng-show="PrivecyPopup"></div>
+    <div id="helpPopup-overlay" ng-show="contactSaved"></div> 
+   
+
+   <script src='js/lib/ui-bootstrap-tpls-0.11.0.js'></script>
+   <script src='js/lib/angular-count-to.js'></script> 
+
+ <script type="text/ng-template" id="sliderModal.html">
+            <div class = "modal-body"> <div class = "container-fluid"> <div class = "row"> <div class = "col-md-12 col-lg-12"> <label class = "control-label"> Normal slider into modal </label>
+        <rzslider
+          rz-slider-model="percentages.normal.low"
+          rz-slider-options="percentages.normal.options">
+        </rzslider> </div>
+    </div> <div class = "row"> <div class = " col-md-12 col-lg-12"> <label class = "control-label"> Range slider into modal </label>
+        <rzslider
+          rz-slider-model="percentages.range.low"
+          rz-slider-high="percentages.range.high"
+          rz-slider-options="percentages.range.options">
+        </rzslider> </div>
+    </div> <div class = "row"> <div class = "col-lg-12"> <button type = "button"
+            ng-click="ok()"
+            class="btn btn-primary"> Save </button>
+        <button type="button" ng-click="cancel()" class="btn btn-default">Cancel</button> </div>
+    </div> </div>
+</div>
+        </script>
+
+  </body>
+
+</html>

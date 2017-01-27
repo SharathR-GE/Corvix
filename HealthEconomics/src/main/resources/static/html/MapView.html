@@ -1,0 +1,753 @@
+
+<div id="MapView">
+	<div id="MapView-Container">
+
+  <div>
+  <div id="mapview-leftcontroller">
+    <div class="btn-group btn-group-xs pull-right" style="position:absolute;
+    top: 2%;
+    padding-left: 1%; width: 50%;">
+    <div style="float:left">
+        <button id="tier_i" type="button"  class="layer" style="border-radius:4px"  ng-click="displayTier1()">Tier 1 (Population)</button>
+        <button id="tier_ii" type="button" class="layer" style="margin-left:0px;border-radius:4px" ng-click="displayTier2()" >Tier 2 (Disease)</button>
+        <button id="tier_iii" type="button"  class="layer" style="margin-left:0px;border-radius:4px" ng-model="tier"  ng-click="displayUSGraph(tier)">Tier 1 & Tier 2</button>
+    </div> 
+
+        <div  style="float:left;margin-left: 22px;">
+          <input type="checkbox" ng-model="showHospitalLayer" ng-show="showHosCheckbox"  ng-checked="showHospitalLayer" ng-click="setMapTierWithHospital()" style="float:left"><span  style="float:left;margin-left: 7px;margin-top: 5px;
+       font-size: 14px;font-weight: bold;color:#3C73BA" ng-show="showHosCheckbox">Show Hospital Layer<span></input>
+        </div>
+        
+      </div>
+
+    <button id="zoom_in" type="button"  class="btn btn-danger" style="bottom: 40%;
+    margin-left: 2%;
+    position: absolute;width: 34px;">+</button>
+    <button id="zoom_out" type="button"  class="btn btn-danger" style="    bottom: 33%;
+    margin-left: 2%;
+    position: absolute;
+        width: 34px;">-</button>
+
+<div class="legendmain" style="position: absolute;top:76%;left: 1%;" ng-show="popLegends">
+          <div class="legend1">
+         <div class="legendcolorDiv4" style="background-color:#acacac"></div>
+         <div class="legendtextDiv"  style="color:black">&gt;10,000</div>
+      </div>
+       <div class="legend1">
+         <div class="legendcolorDiv4" style="background-color:#b9b9b9"></div>
+         <div class="legendtextDiv" style="color:black">5,001-10,000</div>
+      </div>
+       <div class="legend1">
+         <div class="legendcolorDiv3" style="background-color:#c6c6c6"></div>
+         <div class="legendtextDiv" style="color:black">1,001-5,000</div>
+      </div>
+      <div class="legend1">
+         <div class="legendcolorDiv2" style="background-color:#d3d3d3"></div>
+         <div class="legendtextDiv" style="color:black">&lt;1,000 (Population Count by ZIP Code)</div>
+      </div>
+    </div>
+
+
+  
+  </div>
+
+
+    <div style="float: left;
+    margin-top: -35px;position: absolute;" >
+
+    
+
+     <div>     
+   <div style="display:inline-block" ng-show="tier2">   
+      <div style="height: 20px;
+    width: 20px;
+    background-color:#fbfb45;
+    margin-left: 20px;
+    float: left;
+    
+  " >
+       
+            
+      </div>  
+      <div style="    float: left;
+    margin-left: 3px;
+    margin-top: 3px;
+    color: black;font-size: 11px;" > Disease Density (0-{{thirdmaxDiseaseDensity}})</div>
+    </div>
+
+    <div style="display:inline-block" ng-show="tier2">  
+   <div class="legendcolorDiv2" id="lgendImgDiv" style="height: 25px;
+    width: 25px;
+    background-color:#d18025;
+    margin-left: 5px;
+    float: left;
+    
+  " ></div>
+      <div style="    float: left;
+    margin-left: 3px;
+    margin-top: 3px;
+    color: black;font-size: 11px;" >Disease Density ({{thirdmaxDiseaseDensity}}-{{secondmaxDiseaseDensity}})</div>
+    </div>
+
+
+    <div style="display:inline-block" ng-show="tier2" >  
+   <div class="legendcolorDiv2" id="lgendImgDiv" style="height: 25px;
+    width: 25px;
+    background-color:#a50505;
+    margin-left: 5px;
+    float: left;
+    
+  " ></div>
+      <div style="    float: left;
+    margin-left: 3px;
+    margin-top: 3px;
+    color: black;font-size: 11px;" >Disease Density (>={{secondmaxDiseaseDensity}})</div>
+    </div>
+
+  
+  <div style="display:inline-block" ng-show="tier3" >  
+     <div class="legendcolorDiv2" id="lgendImgDiv" style="height: 25px;
+    width: 25px;
+    background-color:#afc4ff;
+    margin-left: 8px;
+    float: left;
+    border-radius: 25px;
+  " ></div> 
+      <div style="float: left;
+                  margin-left: 3px;
+                  margin-top: 3px;
+                  color: black;font-size: 11px;" > Hospital Bed Range (0-100)</div>
+    </div>
+
+    <div style="display:inline-block" ng-show="tier3" >  
+   <div class="legendcolorDiv2" id="lgendImgDiv" style="height: 25px;
+    width: 25px;
+    background-color:#6583d9;
+    margin-left: 5px;
+    float: left;
+    border-radius: 25px;
+  " ></div>
+      <div style="    float: left;
+    margin-left: 3px;
+    margin-top: 3px;
+    color: black;font-size: 11px;" >Hospital Bed Range (101-300)</div>
+    </div>
+
+
+      <div style="display:inline-block" ng-show="tier3">  
+    <div class="legendcolorDiv2" id="lgendImgDiv" style="height: 25px;
+    width: 25px;
+    background-color:#082c95;
+    margin-left: 5px;
+    float: left;
+    border-radius: 25px;
+  " ></div>
+      <div style="    float: left;
+    margin-left: 3px;
+    margin-top: 3px;
+    color: black; font-size: 11px;" >Hospital Bed Range (>300)</div>
+    </div>
+
+
+
+  </div>
+
+ </div> 
+
+</div>
+
+<div id="HospitalAttributes" ng-show="hosptialAtrribute">
+          <div id="HospitalContainer">
+               <div class="hospitalClose" ng-click="demo1()">x</div>
+               <div class="hospitalHeader
+               ">Hospital Attributes</div>
+               <div class="hospitalPopupContent">
+                   <div class="hospitalResourcesHeding first-second-tab" ng-model="Gerneral"  ng-click="toggleTab1()"> General
+                     <span>
+                       <img src="images/expandMenu.png" class="collapseImgIcon" ng-class="{'RotateArrorw' :  Gerneral, '' : !Gerneral}">
+                     </img>
+                   </span>
+                 </div>
+                 <div class="generalHeaderInfo" ng-show="Gerneral" ng-class="{'abcvcvc' :  Gerneral, '' : !Gerneral}">
+                   <div class ="HospitalName">
+                      <div id="hospitalhead" class="labelfont">Hospital Name</div>
+                      <div id="hospitalname namefont">{{hospitalAttributeData.hospitalName}}</div>
+                    </div>
+                    <div class="GeneralMiddle">
+                        <div class="first3">
+                            <div class="address labelfont">HQ Address</div>
+                            <div class="city labelfont">City</div>
+                            <div class="state labelfont">State</div>
+                            <div class="address namefont">{{hospitalAttributeData.hqAddress}}</div>
+                            <div class="city namefont">{{hospitalAttributeData.hqCity}}</div>
+                            <div class="state namefont">{{hospitalAttributeData.hqState}}</div>
+                        </div>
+                        <div class="last2">
+                            <div class="address labelfont">ZIP</div>
+                            <div class="city labelfont">County</div>
+                            <div class="address namefont">{{hospitalAttributeData.hqZipCode}}</div>
+                           <div class="city namefont">{{hospitalAttributeData.hqCounty}}</div>
+                        </div>
+                    </div>                          
+                  </div>
+                  <div class="hospitalResourcesHeding first-second-tab" ng-model="Afillation" ng-click="toggleTab2()">Affiliation
+                     <span>
+                       <img src="images/expandMenu.png"  class="collapseImgIcon" id="img1" ng-class="{'RotateArrorw' : Afillation, '' : !Afillation}">
+                       </img>
+                     </span>
+                 </div>    
+                 <div class="AffiliationsDetails" ng-show="Afillation">
+                        <div class="namenetork">
+                        <div class="netlable labelfont">Network Name</div>
+                        <div class="netname labelfont">Network Parent Name</div>
+                     </div>
+                     <div class="parentnet">
+                       <div class="parentnetlable namefont">{{hospitalAttributeData.networkName}}</div>
+                       <div class="parentnetbname namefont">{{hospitalAttributeData.networkParentName}}</div>
+                   </div>
+                     <div class="AffiliationMiddle">
+                        <div class="ACOAffi1">
+                          <div class="ACOlable labelfont">ACO Affiliation</div>
+                          <div class="ACOlist">{{ACOAffiliation}}
+                          
+                          </div>
+                        </div> 
+                        <div class="ACOAffi2">
+                          <div class="ACOlable labelfont">CIN Affiliation</div>
+                          <div class="ACOlist">{{hospitalAttributeData.cinAffiliations}}
+                          
+                           </div>
+                        </div>  
+                     </div>
+                    <div class="programId ">
+                        <div class="Idleft ACOAffi1">
+                          <div class="address labelfont">340B ID</div>
+                          <div class="address namefont">{{hospitalAttributeData.program340bId}}</div>
+                        </div>
+                       
+                   </div>
+              </div>
+
+              <div class="hospitalResourcesHeding first-second-tab" ng-model="HospitalResources" ng-click="toggleTab3()">Hospital Resources
+                     <span>
+                       <img src="images/expandMenu.png" class="collapseImgIcon" ng-class="{'RotateArrorw' : HospitalResources, '' : !HospitalResources}">
+                      </img>
+                    </span>
+                </div>
+              <div class="hosptalowner" ng-show="HospitalResources">
+                 <ul class="">
+                  <li>
+                     <span class="LiSpantittle">Hospital Ownership</span>
+                    
+                    <div style="float:right">{{hospitalAttributeData.hospitalOwnership}}</div>
+                  </li>
+                  <li>
+                <span class="LiSpantittle">Number of Staffed Beds</span>
+                <div class="sliderDivIndex ">
+                  <rzslider rz-slider-model="hospitalAttributeData.numberBeds" rz-slider-options="read_only_slider.options"  class="sliderOnHosIcon"></rzslider>
+                  
+                </div>
+              </li>
+                  <li>
+                  <span class="LiSpantittle">Magnet Designation</span>
+                  <span class="field-tip">
+                     <img src="images/alert.png" class="alertImg">
+                      <span class="tip-content">Put help text in here!</span>
+                  </span>
+            
+            <div class="onoffswitch">
+                            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"  ng-checked="hospitalAttributeData.magnetDesignation">
+                             <label class="onoffswitch-label" >
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                        </div>
+          </li>
+          <li>
+            <span class="LiSpantittle">Organ Transplant Network</span>
+                    <span class="field-tip">
+                        <img src="images/alert.png" class="alertImg">
+                      <span class="tip-content">Put help text in here!</span>
+                  </span>
+                        <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"   ng-checked="hospitalAttributeData.organTransplantNetwork">
+                             <label class="onoffswitch-label" >
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                        </div>
+          </li>
+          <li>
+            <span class="LiSpantittle">Cancer Accreditation</span>
+           <span class="field-tip">
+                     <img src="images/alert.png" class="alertImg">
+                      <span class="tip-content">Put help text in here!</span>
+                  </span>
+            <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"   ng-checked="hospitalAttributeData.cancerAccreditation">
+                             <label class="onoffswitch-label" >
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                        </div>
+          </li>
+        <li>
+                  <span class="LiSpantittle">Sole Community Hospital</span>
+                  <span class="field-tip">
+                      <img src="images/alert.png" class="alertImg">
+                      <span class="tip-content">Put help text in here!</span>
+                  </span>
+
+                <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"   ng-checked="hospitalAttributeData.soleCommunityHospital">
+                             <label class="onoffswitch-label" >
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+            </li>
+            <li>
+              <span class="LiSpantittle">Academic Medical Center</span>
+                   <span class="field-tip">
+                     <img src="images/alert.png" class="alertImg">
+                      <span class="tip-content">Put help text in here!</span>
+                  </span>
+                <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"   ng-checked="hospitalAttributeData.academicMedicalCenter">
+                             <label class="onoffswitch-label" >
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+            </li>
+            <li>
+              <span class="LiSpantittle">Council Teaching Membership</span>
+              <span class="field-tip">
+                     <img src="images/alert.png" class="alertImg">
+                      <span class="tip-content">Put help text in here!</span>
+                  </span>
+                <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"  ng-checked="hospitalAttributeData.councilTeachingMembership">
+                             <label class="onoffswitch-label" >
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+              </div>
+            </li>  
+
+                 <li>
+              <span class="LiSpantittle">HHI</span>
+                <span class="field-tip">
+                     <img src="images/alert.png" class="alertImg">
+                      <span class="tip-content hhi">Put help text in here!</span>
+                  </span>
+            
+                <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"   ng-checked="hospitalAttributeData.hhi">
+                             <label class="onoffswitch-label" >
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+               </div>
+            </li> 
+
+           </ul>  
+ 
+        </div>
+            
+          <div class="hospitalResourcesHeding first-second-tab" ng-model="collapsed" ng-click="toggleTab4()" >Medicare Penalties And Incentives
+            <span>
+                 <img src="images/expandMenu.png" class="collapseImgIcon" ng-class="{'RotateArrorw' : medicare, '' : !medicare}">
+                 </img>
+               </span>
+
+            </div>
+             <div ng-show="medicare" class="abcccc">
+
+                  <div class="MedicareLeft">
+                       <div class="MedicareLeft-tittle labelfont">DSH PAYMENT MEDICARE</div>
+                       <div class="MedicareLeftText">{{hospitalAttributeData.dshPaymentMedicare | customCurrency:'$'}}</div>
+                        
+                       <div class="MedicareLeft-tittle labelfont label2">READMISSION PENALTY FY 2015</div>
+                       <div class="MedicareLeftText">{{hospitalAttributeData.readmissionRatePenaltyFy2015 | customCurrency:'$'}}</div>
+
+                       <div class="MedicareLeft-tittle labelfont label2">EST READMISSION PENALTY FY 2015</div>
+                       <div class="MedicareLeftText">{{hospitalAttributeData.estReadmissionPenaltyFy2015 | customCurrency:'$'}}</div>
+
+
+                  </div>
+                  <div class="MedicareRight">
+                       <div class="MedicareLeft-tittle labelfont">VBP PERCENTAGE FY2015</div>
+                       <div class="MedicareLeftText" >{{hospitalAttributeData.vbpPercentageFy2015 | number:2}}%</div>
+
+                       <div class="MedicareLeft-tittle labelfont label2">VBP PERCENTAGE FY2015</div>
+                       <div class="MedicareLeftText">{{hospitalAttributeData.vbpPercentageFy2015 | number:2}}%</div>
+
+                       <div class="MedicareLeft-tittle labelfont label2">EST VBP ADJUSTMENT FY2015</div>
+                       <div class="MedicareLeftText">{{hospitalAttributeData.estVbpAdjustmentFy2015 | customCurrency:'$'}}</div>
+                  </div>
+             </div>
+
+              <div class="hospitalResourcesHeding first-second-tab" ng-model="collapsed" ng-click="toggleTab5()" >Financial Matrix
+
+                <span>
+                 <img src="images/expandMenu.png" class="collapseImgIcon" ng-class="{'RotateArrorw' : FinancialMatrics, '' : !FinancialMatrics}">
+                 </img>
+               </span>
+             </div>
+
+             <div class="FinancialMatrics" ng-show="FinancialMatrics">
+
+                   <div class="Revenue">
+                   <div class="RevenueHeader"><span>Revenue</span></div>
+                   <div class="RevenueContent">
+                       <div class="RevenueContentLetf"> 
+                         <div class="RevenueLeftTittle labelfont">Total Patient Revenue</div>
+                         <div class="RevenueLeftText">{{hospitalAttributeData.totPatientRevenue | customCurrency:'$'}}</div> 
+                         <div class="RevenueLeftTittle labelfont label2">Total Inpatient Revenue</div>
+                         <div class="RevenueLeftText">{{hospitalAttributeData.inpatientRevenue | customCurrency:'$'}}</div>
+                         <div class="RevenueLeftTittle labelfont label2">Total Outpatient Revenue</div>
+                         <div class="RevenueLeftText">{{hospitalAttributeData.outpatientRevenue | customCurrency:'$'}}</div>
+                         <div class="RevenueLeftTittle labelfont label2">Patient Discount</div>
+                         <div class="RevenueLeftText">{{patientDiscount}}</div>
+                        <div class="RevenueLeftTittle labelfont label2">Net Patient Revenue</div>
+                         <div class="RevenueLeftText">{{hospitalAttributeData.netPatientRevenue | customCurrency:'$'}}</div>   
+                      </div>
+                      
+                       <div class="RevenueContentRight"> 
+                         <div class="RevenueLeftTittle labelfont ">Net Medicare Revenue</div>
+                         <div class="RevenueLeftText">{{netMedicareRev}}</div> 
+                         <div class="RevenueLeftTittle labelfont label2">Net Medicaid Revenue</div>
+                         <div class="RevenueLeftText">{{netMedicaidRev}}</div> 
+                         <div class="RevenueLeftTittle labelfont label2">PCT Patient Discount</div>
+                         <div class="RevenueLeftText">{{pctPatientDis}}</div> 
+                         <div class="RevenueLeftTittle labelfont label2">Net Operation Margin</div>
+                         <div class="RevenueLeftText">{{hospitalAttributeData.netOperatingMargin | customCurrency:'$'}}</div> 
+                         <div class="RevenueLeftTittle labelfont label2">Revenue</div>
+                         <div class="RevenueLeftText">{{TotalRevenue}}</div> 
+                         
+                      </div> 
+                   </div>
+                  
+
+                </div>
+
+
+                <div class="Revenue">
+                   <div class="RevenueHeader"><span>Expenses And Budgets</span></div>
+                   <div class="RevenueContent">
+                       <div class="RevenueContentLetf"> 
+                         <div class="RevenueLeftTittle labelfont">Total Operating Expense</div>
+                         <div class="RevenueLeftText">{{hospitalAttributeData.totOperatingExpenses | customCurrency:'$'}}</div> 
+                        
+                      </div>
+                       <div class="RevenueContentRight"> 
+                           <div class="RevenueLeftTittle labelfont ">IT Operating Spend</div>
+                           <div class="RevenueLeftText">{{hospitalAttributeData.itOperatingSpend | customCurrency:'$'}}</div> 
+                       </div> 
+                   </div>
+                </div>
+                   <div class="Revenue">
+                   <div class="RevenueHeader"><span>Income And EBITDA</span></div>
+                   <div class="RevenueContent">
+                       <div class="RevenueContentLetf"> 
+                         <div class="RevenueLeftTittle labelfont">Net Income</div>
+                         <div class="RevenueLeftText">{{hospitalAttributeData.netIncome | customCurrency:'$'}}</div> 
+                    </div>
+                       <div class="RevenueContentRight"> 
+                         <div class="RevenueLeftTittle labelfont "></div>
+                         <div class="RevenueLeftText"></div> 
+                     </div> 
+                   </div>
+                </div>
+                 <div class="Revenue">
+                   <div class="RevenueHeader"><span>Assets</span></div>
+                   <div class="RevenueContent">
+                       <div class="RevenueContentLetf"> 
+                         <div class="RevenueLeftTittle labelfont">Cash On Hand</div>
+                         <div class="RevenueLeftText">{{hospitalAttributeData.cashOnHand | customCurrency:'$'}}</div> 
+                    </div>
+                       <div class="RevenueContentRight"> 
+                         <div class="RevenueLeftTittle labelfont "></div>
+                         <div class="RevenueLeftText"></div> 
+                     </div> 
+                   </div>
+                </div>
+
+             </div>
+
+    </div>            
+</div>
+     
+</div>
+
+
+	<div id="mapview-rightcontroller">
+	<div class="collpse-menu" ng-click="showorhidemenu()"></div>
+		<div id="mapview-right-maindiv" ng-show="showmenuvalue">
+			<div class="mapview-right-header"> FILTER OPTIONS</div>
+			<div class="mapview-right-content">
+			
+				<div class="mapview-right-content-header">POPULATION HEALTH NEED</div>
+				<div id="scroller">	
+					<div class="mapview-right-selecttitle">Select Disease Diagnosis</div>
+					
+          <select class="mapview-right-selectbox" ng-model="filterData.selectDiseasemodel">
+             <option value="All Disease">Heart Disease and Stroke</option>
+            <optgroup label="Heart Disease">
+              <option  ng-repeat="x in diseaseDropdown[0].allDiseases.heartDisease" value="{{x}}"  ng-selected="filterData.selectDiseasemodel == x">{{x}}</option>
+    
+            </optgroup>
+            <optgroup label="Stroke">
+              <option ng-repeat="y in diseaseDropdown[0].allDiseases.strokeDisease" value="{{y}}"  ng-selected="filterData.selectDiseasemodel == y">{{y}}</option>
+            
+            </optgroup>
+          </select>
+				
+					<div class="mapview-right-selecttitle">Select Demographics</div>
+					<select class="mapview-right-selectbox" ng-model="filterData.selectGenderModel">
+						<option value="1,2">All Genders</option>
+						<option value="1">Male</option>
+						<option value="2">Female</option>
+					</select>
+					<div id ="ageMultiDrop"  ng-dropdown-multiselect="" options="selectAgedata" selected-model="filterData.selectAgemodel" extra-settings="selectAgesettings" events="eventAge"></div>
+					
+ 
+					<div class="mapview-right-selecttitle">Specify Year of Interest</div>
+					<div class="mapview-right-years-container">
+                    <div class="mapview-right-years mapview-right-years-current" ng-class="{'Eco-Year-button-selected': filterData.yearData == 'Current Year'}" id="Current-Year" ng-click="CurrentYear($event)">Current Year</div>
+                    <div class="mapview-right-years mapview-right-years-five" ng-class="{'Eco-Year-button-selected': filterData.yearData == '5-year'}" id="Five-Year" ng-click="FiveYear($event)">5-year</div>
+                    <div class="mapview-right-years mapview-right-years-ten" ng-class="{'Eco-Year-button-selected': filterData.yearData == '10-year'}" id="Ten-Year" ng-click="TenYear($event)">10-year</div>
+                    </div>
+					<div class="mapview-right-zipcodetitle">AVAILABLE HOSPITAL RESOURCES</div>
+					<div class="mapview-right-char" ng-click="showPopup()">Select Hospital Characteristics</div>
+
+          
+           <div class="Zipcodebottom">
+                <div class="Zipcodebottom1">
+                   <div class="inputs">
+                    <input type="radio" value="USOn" ng-model="checkZipOrUS" ng-click="showHideZip()"/><span>US VIEW</span>
+                   </div>
+                   <div class="inputs">
+                   <input type="radio" value="ZipOn" ng-model="checkZipOrUS" ng-click="showHideZip()"/><span>ZIP CODE ORIGIN</span>
+                    <input type="text" id="zipcode-input" placeholder="enter zipcode" maxlength="5"  ng-disabled="showZip" ng-model="filterData.zipCode" ng-class="{'disabledField':showZip}" valid-number />
+                  </div>
+
+                 </div>
+                <div class="Zipcodebottom2">
+                   <div class="div1"></div>
+                   <span>OR</span>
+                   <div class="div1"></div>
+                </div>
+                <div class="Zipcodebottom3">
+
+                      <input type="radio" value="StateOn" ng-model="checkZipOrUS" ng-click="showHideZip()" ng-click="showHideZip()"/>
+                      <span>STATE VIEW</span>
+                     
+                       <select  ng-model="filterData.stateSelect"  ng-options="option.abbreviation as option.state for option in statesData" ng-disabled="showStateView" ng-class="{'disabledSelect':showStateView}"  >
+                      </select></div>
+           </div>
+
+				<!-- 	<div class="mapview-right-zipcodetitle">
+                   
+
+
+               <div class="zipcodetitleLeft">
+                       <div class="topleft1">
+                         <input type="radio" value="USOn" ng-model="checkZipOrUS" ng-click="showHideZip()" >US VIEW</input>
+              
+                      </div>
+                      <div>
+                        <div class="ziporigin">
+               <input type="radio" value="ZipOn" ng-model="checkZipOrUS" ng-click="showHideZip()"/>ZIP CODE ORIGIN
+              </div>
+              
+              <div>
+             
+               <input type="text" id="zipcode-input" placeholder="enter zipcode" maxlength="5"  ng-disabled="showZip" ng-model="filterData.zipCode" ng-class="{'disabledField':showZip}" valid-number />
+              </div>
+             </div>
+          </div>
+
+
+            <div class="zipcodetitleTop">
+                  
+                
+                 <div class="showStateSelect">
+                        <input type="radio" value="StateOn" ng-model="checkZipOrUS" ng-click="showHideZip()" ng-click="showHideZip()">STATE VIEW</input>
+                     
+                       <select  ng-model="filterData.stateSelect"  ng-options="option.abbreviation as option.state for option in statesData" ng-disabled="showStateView" ng-class="{'disabledSelect':showStateView}"  >
+                      </select>
+                 </div> 
+            </div>
+
+           
+						
+
+            
+					</div> -->
+				</div>
+				<div class="showdata-button" ng-click="showUSorState()" ng-disabled="disableShowData">SHOW DATA</div>
+			
+			</div>
+		</div>
+	</div>
+	
+	</div>
+	<div id="mapview-popup" ng-show="showPopupValue">
+			<div id="mapview-container">
+			<div class="mapview-popup-cross" ng-click="hidePopup()">x</div>
+				<div class="mapview-popup-header">AVAILABLE HOSPITAL RESOURCES</div>
+				<div class="mapview-popup-content">
+					<ul>
+						<li>
+							<span>Hospital Ownership</span>
+							<select style="line-height: 1;" ng-model="filterData.hospOwnership">
+							<option ng-repeat="x in hospOwnershipData track by $index" value={{x}} ng-selected="filterData.hospOwnership == x">{{x}}</option>
+								
+							</select>
+
+						</li>
+						
+						<li>
+							<span  class="LiSpantittle">Number of Beds</span>
+                          <div class="sliderDiv"> 
+                            <div>
+                              <input type="text" ng-model="filterData.sliderVal" maxlength="4" ng-change="sliderValChange()" style="line-height: 10px; width: 24%;text-align: right;margin-left: -83px;" valid-number>
+                                
+                              </input>
+                            </div>
+                          <rzslider rz-slider-model="filterData.sliderVal" rz-slider-high="filterData.sliderValMax" rz-slider-options="minRangeSlider.options"></rzslider>
+                          <div style="    margin-top: -91px;
+    width: 24%;
+    margin-left: 80%" maxlength="4" valid-number><input type="text" ng-model="filterData.sliderValMax" ng-change="sliderValChange()" style="line-height: 10px; width: 100%;text-align: right;" valid-number></input></div>
+      							
+
+   							</div>
+    
+    
+						</li>
+						<li>
+							 <span class="LiSpantittle">Magnet Designation</span>
+                             <span class="field-tip">
+                             	<img src="images/alert.png" class="alertImg">
+                                 <span class="tip-content">Put help text in here!</span>
+                             </span>
+
+						   <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch6" ng-model="filterData.magntDesig">
+                             <label class="onoffswitch-label" for="myonoffswitch6">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+						</li>
+						<li>
+							<span class="LiSpantittle">Organ Transplant Network</span>
+							  <span class="field-tip">
+                             	<img src="images/alert.png" class="alertImg">
+                                 <span class="tip-content">Put help text in here!</span>
+                             </span>
+                               <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch5" ng-model="filterData.organTrans">
+                             <label class="onoffswitch-label" for="myonoffswitch5">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+
+						</li>
+						<li>
+							<span class="LiSpantittle">Cancer Accreditation</span>
+							 <span class="field-tip">
+                                <img src="images/alert.png" class="alertImg">
+                                <span class="tip-content">Put help text in here!</span>
+                             </span>
+							  <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch1" ng-model="filterData.canseAccred">
+                             <label class="onoffswitch-label" for="myonoffswitch1">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+						</li>
+						<li>
+							<span class="LiSpantittle">Sole Community Hospital</span>
+							 <span class="field-tip">
+                              <img src="images/alert.png" class="alertImg">
+                              <span class="tip-content">Put help text in here!</span>
+                            </span>
+							  <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch2" ng-model="filterData.soleComm">
+                             <label class="onoffswitch-label" for="myonoffswitch2">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+						</li>
+						<li>
+							<span class="LiSpantittle">Academic Medical Center</span>
+							 <span class="field-tip">
+                                 <img src="images/alert.png" class="alertImg">
+                                 <span class="tip-content">Put help text in here!</span>
+                            </span>
+							  <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch3" ng-model="filterData.academicMedi">
+                             <label class="onoffswitch-label" for="myonoffswitch3">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+						</li>
+						<li>
+							<span class="LiSpantittle">Council Teaching Membership</span>
+							<span class="field-tip">
+                                <img src="images/alert.png" class="alertImg">
+                                 <span class="tip-content">Put help text in here!</span>
+                            </span>  
+                          <div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch4" ng-model="filterData.councilMeet">
+                             <label class="onoffswitch-label" for="myonoffswitch4">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+						</li> 
+
+					
+						<li>
+							<span class="LiSpantittle">HHI</span>
+							<span class="field-tip">
+                                <img src="images/alert.png" class="alertImg">
+                                 <span class="tip-content hhi">Put help text in here!</span>
+                            </span>  
+                       		<div class="onoffswitch">
+                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch7" ng-model="filterData.HHI">
+                             <label class="onoffswitch-label" for="myonoffswitch7">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                             </label>
+                            </div>
+						</li>
+					 </ul>
+
+				</div>
+			</div>
+		</div>
+     <!-- ************************ ERROR POPUP STARTS******************** -->
+          <div id="ErrorPopUp" ng-show="ErrorPopUp">
+            <div id="ErrorPopUpcontainer">
+               <div class="FeedBackCross" ng-click="ErrorPopUp=!ErrorPopUp">x</div>
+               <div class="feedbackHader">INFO</div>
+            </div>
+            <div class="errorContent">{{errorMessage}}</div>
+
+          </div>
+
+	<div id="mapview-popup-overlay" ng-show="showPopupValue"></div>
+   <div style="
+    padding-top: 7px;
+    padding-bottom: 7px;
+    color:fff;
+">This map shows data for <span class="noteText"> {{genderData}}</span> of <span class="noteText">{{mapAgeDetails}} Age Group(s)</span>  displayed as<span class="noteText">{{mapYearDetails}}</span> of <span class="noteText">{{mapDiseaseDetails}}.</span></div> 
+</div>
